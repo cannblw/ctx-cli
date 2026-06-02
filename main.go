@@ -17,7 +17,7 @@ func main() {
 	}
 	dbPath := filepath.Join(home, ".ctx", "ctx.db")
 
-	r, err := repo.NewBunRepository(dbPath)
+	r, err := repo.NewBunStore(dbPath)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "error: cannot open database:", err)
 		os.Exit(1)

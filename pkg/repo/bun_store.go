@@ -16,11 +16,11 @@ import (
 	"github.com/cannblw/ctx-cli/pkg/models"
 )
 
-type BunRepository struct {
+type BunStore struct {
 	db *bun.DB
 }
 
-func NewBunRepository(dbPath string) (*BunRepository, error) {
+func NewBunStore(dbPath string) (*BunStore, error) {
 	dir := filepath.Dir(dbPath)
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return nil, fmt.Errorf("create db dir: %w", err)
@@ -44,14 +44,14 @@ func NewBunRepository(dbPath string) (*BunRepository, error) {
 	}
 
 	db := bun.NewDB(sqldb, sqlitedialect.New())
-	return &BunRepository{db: db}, nil
+	return &BunStore{db: db}, nil
 }
 
-func NewBunRepositoryFromDB(db *bun.DB) *BunRepository {
-	return &BunRepository{db: db}
+func NewBunStoreFromDB(db *bun.DB) *BunStore {
+	return &BunStore{db: db}
 }
 
-func (r *BunRepository) CreateContext(ctx context.Context, name, description string) (*models.Context, error) {
+func (r *BunStore) CreateContext(ctx context.Context, name, description string) (*models.Context, error) {
 	c := &models.Context{
 		Name:        name,
 		Description: description,
@@ -63,7 +63,7 @@ func (r *BunRepository) CreateContext(ctx context.Context, name, description str
 	return c, nil
 }
 
-func (r *BunRepository) GetContext(ctx context.Context, name string) (*models.Context, error) {
+func (r *BunStore) GetContext(ctx context.Context, name string) (*models.Context, error) {
 	c := new(models.Context)
 	err := r.db.NewSelect().Model(c).Where("name = ?", name).Scan(ctx)
 	if err != nil {
@@ -72,13 +72,13 @@ func (r *BunRepository) GetContext(ctx context.Context, name string) (*models.Co
 	return c, nil
 }
 
-func (r *BunRepository) ListContexts(ctx context.Context) ([]models.Context, error) {
+func (r *BunStore) ListContexts(ctx context.Context) ([]models.Context, error) {
 	var contexts []models.Context
 	err := r.db.NewSelect().Model(&contexts).OrderExpr("created_at ASC").Scan(ctx)
 	return contexts, err
 }
 
-func (r *BunRepository) Close() error {
+func (r *BunStore) Close() error {
 	return r.db.Close()
 }
 

@@ -32,7 +32,7 @@ func NewTestDB(t *testing.T) repo.ContextStore {
 
 	db := bun.NewDB(sqldb, sqlitedialect.New())
 	t.Cleanup(func() { db.Close() })
-	return repo.NewBunRepositoryFromDB(db)
+	return repo.NewBunStoreFromDB(db)
 }
 
 func findMigrationsDir() string {

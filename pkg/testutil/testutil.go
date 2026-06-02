@@ -26,6 +26,7 @@ func NewTestDB(t *testing.T) *bun.DB {
 	t.Cleanup(func() { sqldb.Close() })
 
 	goose.SetDialect("sqlite3")
+	goose.SetLogger(goose.NopLogger())
 	migrationsDir := findMigrationsDir()
 	require.NoError(t, goose.Up(sqldb, migrationsDir))
 

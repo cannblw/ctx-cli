@@ -34,6 +34,7 @@ func NewBunRepository(dbPath string) (*BunRepository, error) {
 	}
 
 	goose.SetDialect("sqlite3")
+	goose.SetLogger(goose.NopLogger())
 	if err := goose.Up(sqldb, findMigrationsDir()); err != nil {
 		sqldb.Close()
 		return nil, fmt.Errorf("run migrations: %w", err)

@@ -26,6 +26,13 @@ make build
 
 The binary lands at `bin/ctx`.
 
+## Quick start
+
+```sh
+ctx new my-project --desc "Refactoring the auth module"
+ctx contexts
+```
+
 ## Usage
 
 ```sh

@@ -13,6 +13,7 @@ import (
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/sqlitedialect"
 
+	"github.com/cannblw/ctx-cli/migrations"
 	"github.com/cannblw/ctx-cli/pkg/models"
 )
 
@@ -41,7 +42,8 @@ func NewBunStore(dbPath string) (*BunStore, error) {
 
 	goose.SetDialect(GooseDialect)
 	goose.SetLogger(goose.NopLogger())
-	if err := goose.Up(sqldb, findMigrationsDir()); err != nil {
+	goose.SetBaseFS(migrations.FS)
+	if err := goose.Up(sqldb, "."); err != nil {
 		sqldb.Close()
 		return nil, fmt.Errorf("run migrations: %w", err)
 	}
@@ -90,13 +92,3 @@ func (r *BunStore) Close() error {
 	return r.db.Close()
 }
 
-func findMigrationsDir() string {
-	dirs := []string{"migrations", "../migrations", "../../migrations", "../../../migrations"}
-	for _, d := range dirs {
-		if fi, err := os.Stat(d); err == nil && fi.IsDir() {
-			abspath, _ := filepath.Abs(d)
-			return abspath
-		}
-	}
-	return "migrations"
-}

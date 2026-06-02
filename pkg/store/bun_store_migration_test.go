@@ -3,7 +3,6 @@ package store_test
 import (
 	"context"
 	"database/sql"
-	"os"
 	"path/filepath"
 	"testing"
 
@@ -15,19 +14,10 @@ import (
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/sqlitedialect"
 
+	"github.com/cannblw/ctx-cli/migrations"
 	"github.com/cannblw/ctx-cli/pkg/models"
 	"github.com/cannblw/ctx-cli/pkg/store"
 )
-
-func findMigrationsDir() string {
-	dirs := []string{"migrations", "../migrations", "../../migrations", "../../../migrations"}
-	for _, d := range dirs {
-		if fi, err := os.Stat(d); err == nil && fi.IsDir() {
-			return d
-		}
-	}
-	return "migrations"
-}
 
 func newTestBunDB(t *testing.T) *bun.DB {
 	t.Helper()
@@ -40,7 +30,8 @@ func newTestBunDB(t *testing.T) *bun.DB {
 
 	goose.SetDialect(store.GooseDialect)
 	goose.SetLogger(goose.NopLogger())
-	require.NoError(t, goose.Up(sqldb, findMigrationsDir()))
+	goose.SetBaseFS(migrations.FS)
+	require.NoError(t, goose.Up(sqldb, "."))
 
 	_, err = sqldb.Exec(store.ForeignKeysPragma)
 	require.NoError(t, err)
@@ -139,7 +130,7 @@ func TestMigration_Idempotent(t *testing.T) {
 	sqldb := db.DB
 	goose.SetDialect(store.GooseDialect)
 	goose.SetLogger(goose.NopLogger())
-	require.NoError(t, goose.Up(sqldb, findMigrationsDir()))
+	require.NoError(t, goose.Up(sqldb, "."))
 
 	count, err := db.NewSelect().Model((*models.State)(nil)).Count(context.Background())
 	require.NoError(t, err)
@@ -153,12 +144,12 @@ func TestMigration_DownThenUp(t *testing.T) {
 	goose.SetDialect(store.GooseDialect)
 	goose.SetLogger(goose.NopLogger())
 
-	require.NoError(t, goose.Down(sqldb, findMigrationsDir()))
+	require.NoError(t, goose.Down(sqldb, "."))
 
 	count, err := db.NewSelect().Model((*models.State)(nil)).Count(context.Background())
 	assert.Error(t, err, "table should not exist after down migration")
 
-	require.NoError(t, goose.Up(sqldb, findMigrationsDir()))
+	require.NoError(t, goose.Up(sqldb, "."))
 
 	count, err = db.NewSelect().Model((*models.State)(nil)).Count(context.Background())
 	require.NoError(t, err)

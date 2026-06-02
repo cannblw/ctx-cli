@@ -21,7 +21,7 @@ func NewNewCmd(r repo.Repository, stdout io.Writer) *cobra.Command {
 
 Examples:
   ctx new fix-auth-bug
-  ctx n migrate-db --desc "Database migration to Postgres 16"`,
+  ctx n upgrade-auth --desc "Refactor OIDC flow to support multi-tenant"`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name := args[0]

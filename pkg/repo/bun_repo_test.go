@@ -7,13 +7,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/cannblw/ctx-cli/pkg/repo"
 	"github.com/cannblw/ctx-cli/pkg/testutil"
 )
 
 func TestCreateContext(t *testing.T) {
-	db := testutil.NewTestDB(t)
-	r := repo.NewBunRepositoryFromDB(db)
+	r := testutil.NewTestDB(t)
 
 	ctx := context.Background()
 	c, err := r.CreateContext(ctx, "fix-auth", "Fix the auth bug")
@@ -25,8 +23,7 @@ func TestCreateContext(t *testing.T) {
 }
 
 func TestCreateContext_DuplicateName(t *testing.T) {
-	db := testutil.NewTestDB(t)
-	r := repo.NewBunRepositoryFromDB(db)
+	r := testutil.NewTestDB(t)
 
 	ctx := context.Background()
 	_, err := r.CreateContext(ctx, "fix-auth", "")
@@ -37,8 +34,7 @@ func TestCreateContext_DuplicateName(t *testing.T) {
 }
 
 func TestGetContext(t *testing.T) {
-	db := testutil.NewTestDB(t)
-	r := repo.NewBunRepositoryFromDB(db)
+	r := testutil.NewTestDB(t)
 
 	ctx := context.Background()
 	created, _ := r.CreateContext(ctx, "fix-auth", "desc")
@@ -50,16 +46,14 @@ func TestGetContext(t *testing.T) {
 }
 
 func TestGetContext_NotFound(t *testing.T) {
-	db := testutil.NewTestDB(t)
-	r := repo.NewBunRepositoryFromDB(db)
+	r := testutil.NewTestDB(t)
 
 	_, err := r.GetContext(context.Background(), "nonexistent")
 	assert.Error(t, err)
 }
 
 func TestListContexts_Empty(t *testing.T) {
-	db := testutil.NewTestDB(t)
-	r := repo.NewBunRepositoryFromDB(db)
+	r := testutil.NewTestDB(t)
 
 	contexts, err := r.ListContexts(context.Background())
 	require.NoError(t, err)
@@ -67,8 +61,7 @@ func TestListContexts_Empty(t *testing.T) {
 }
 
 func TestListContexts_Ordered(t *testing.T) {
-	db := testutil.NewTestDB(t)
-	r := repo.NewBunRepositoryFromDB(db)
+	r := testutil.NewTestDB(t)
 
 	ctx := context.Background()
 	r.CreateContext(ctx, "b", "")

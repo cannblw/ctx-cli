@@ -8,15 +8,15 @@ import (
 
 	_ "modernc.org/sqlite"
 
-	_ "github.com/cannblw/ctx-cli/migrations"
-
 	"github.com/pressly/goose/v3"
 	"github.com/stretchr/testify/require"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/sqlitedialect"
+
+	"github.com/cannblw/ctx-cli/pkg/repo"
 )
 
-func NewTestDB(t *testing.T) *bun.DB {
+func NewTestDB(t *testing.T) repo.Repository {
 	t.Helper()
 
 	dir := t.TempDir()
@@ -32,7 +32,7 @@ func NewTestDB(t *testing.T) *bun.DB {
 
 	db := bun.NewDB(sqldb, sqlitedialect.New())
 	t.Cleanup(func() { db.Close() })
-	return db
+	return repo.NewBunRepositoryFromDB(db)
 }
 
 func findMigrationsDir() string {

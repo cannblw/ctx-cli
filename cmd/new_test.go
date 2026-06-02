@@ -9,13 +9,11 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/cannblw/ctx-cli/cmd"
-	"github.com/cannblw/ctx-cli/pkg/repo"
 	"github.com/cannblw/ctx-cli/pkg/testutil"
 )
 
 func TestNewCommand_Success(t *testing.T) {
-	db := testutil.NewTestDB(t)
-	r := repo.NewBunRepositoryFromDB(db)
+	r := testutil.NewTestDB(t)
 	buf := new(bytes.Buffer)
 
 	newCmd := cmd.NewNewCmd(r, buf)
@@ -32,8 +30,7 @@ func TestNewCommand_Success(t *testing.T) {
 }
 
 func TestNewCommand_DuplicateName(t *testing.T) {
-	db := testutil.NewTestDB(t)
-	r := repo.NewBunRepositoryFromDB(db)
+	r := testutil.NewTestDB(t)
 	buf := new(bytes.Buffer)
 
 	newCmd := cmd.NewNewCmd(r, buf)

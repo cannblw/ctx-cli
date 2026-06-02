@@ -9,8 +9,6 @@ import (
 
 	_ "modernc.org/sqlite"
 
-	_ "github.com/cannblw/ctx-cli/migrations"
-
 	"github.com/pressly/goose/v3"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/sqlitedialect"

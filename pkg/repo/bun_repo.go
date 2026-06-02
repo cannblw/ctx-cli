@@ -38,6 +38,11 @@ func NewBunRepository(dbPath string) (*BunRepository, error) {
 		return nil, fmt.Errorf("run migrations: %w", err)
 	}
 
+	if _, err := sqldb.Exec("PRAGMA foreign_keys = ON"); err != nil {
+		sqldb.Close()
+		return nil, fmt.Errorf("enable foreign keys: %w", err)
+	}
+
 	db := bun.NewDB(sqldb, sqlitedialect.New())
 	return &BunRepository{db: db}, nil
 }

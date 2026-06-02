@@ -29,8 +29,8 @@ Examples:
 				return fmt.Errorf("context name cannot be empty")
 			}
 
-			ctxVal := context.Background()
-			c, err := r.CreateContext(ctxVal, name, descFlag)
+			ctx := context.Background()
+			c, err := r.CreateContext(ctx, name, descFlag)
 			if err != nil {
 				return fmt.Errorf("creating context: %w", err)
 			}

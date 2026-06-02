@@ -16,7 +16,7 @@ import (
 	"github.com/cannblw/ctx-cli/pkg/repo"
 )
 
-func NewTestDB(t *testing.T) repo.Repository {
+func NewTestDB(t *testing.T) repo.ContextStore {
 	t.Helper()
 
 	dir := t.TempDir()

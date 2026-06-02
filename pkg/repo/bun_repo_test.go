@@ -123,12 +123,6 @@ func TestCreateContext_UpdatedAtEqualsCreatedAtInitially(t *testing.T) {
 	assert.True(t, c.UpdatedAt.Equal(c.CreatedAt), "created_at and updated_at should be equal on creation")
 }
 
-func TestClose(t *testing.T) {
-	r := testutil.NewTestDB(t)
-
-	assert.NoError(t, r.Close())
-}
-
 func TestGetContext_CaseSensitive(t *testing.T) {
 	r := testutil.NewTestDB(t)
 

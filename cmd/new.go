@@ -10,7 +10,7 @@ import (
 	"github.com/cannblw/ctx-cli/pkg/repo"
 )
 
-func NewNewCmd(r repo.Repository, stdout io.Writer) *cobra.Command {
+func NewNewCmd(r repo.ContextStore, stdout io.Writer) *cobra.Command {
 	var descFlag string
 
 	cmd := &cobra.Command{

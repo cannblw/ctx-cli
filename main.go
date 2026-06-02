@@ -15,7 +15,7 @@ func main() {
 		fmt.Fprintln(os.Stderr, "error: cannot find home directory:", err)
 		os.Exit(1)
 	}
-	dbPath := filepath.Join(home, ".ctx", "ctx.db")
+	dbPath := filepath.Join(home, store.DBDir, store.DBFile)
 
 	r, err := store.NewBunStore(dbPath)
 	if err != nil {

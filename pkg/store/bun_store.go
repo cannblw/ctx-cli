@@ -16,6 +16,14 @@ import (
 	"github.com/cannblw/ctx-cli/pkg/models"
 )
 
+const (
+	DriverName        = "sqlite"
+	GooseDialect      = "sqlite3"
+	ForeignKeysPragma = "PRAGMA foreign_keys = ON"
+	DBDir             = ".ctx"
+	DBFile            = "ctx.db"
+)
+
 type BunStore struct {
 	db *bun.DB
 }
@@ -26,19 +34,19 @@ func NewBunStore(dbPath string) (*BunStore, error) {
 		return nil, fmt.Errorf("create db dir: %w", err)
 	}
 
-	sqldb, err := sql.Open("sqlite", dbPath)
+	sqldb, err := sql.Open(DriverName, dbPath)
 	if err != nil {
 		return nil, fmt.Errorf("open db: %w", err)
 	}
 
-	goose.SetDialect("sqlite3")
+	goose.SetDialect(GooseDialect)
 	goose.SetLogger(goose.NopLogger())
 	if err := goose.Up(sqldb, findMigrationsDir()); err != nil {
 		sqldb.Close()
 		return nil, fmt.Errorf("run migrations: %w", err)
 	}
 
-	if _, err := sqldb.Exec("PRAGMA foreign_keys = ON"); err != nil {
+	if _, err := sqldb.Exec(ForeignKeysPragma); err != nil {
 		sqldb.Close()
 		return nil, fmt.Errorf("enable foreign keys: %w", err)
 	}

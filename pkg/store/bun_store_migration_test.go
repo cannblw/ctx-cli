@@ -16,6 +16,7 @@ import (
 	"github.com/uptrace/bun/dialect/sqlitedialect"
 
 	"github.com/cannblw/ctx-cli/pkg/models"
+	"github.com/cannblw/ctx-cli/pkg/store"
 )
 
 func findMigrationsDir() string {
@@ -33,15 +34,15 @@ func newTestBunDB(t *testing.T) *bun.DB {
 
 	dir := t.TempDir()
 	dbPath := filepath.Join(dir, "test.db")
-	sqldb, err := sql.Open("sqlite", dbPath)
+	sqldb, err := sql.Open(store.DriverName, dbPath)
 	require.NoError(t, err)
 	t.Cleanup(func() { sqldb.Close() })
 
-	goose.SetDialect("sqlite3")
+	goose.SetDialect(store.GooseDialect)
 	goose.SetLogger(goose.NopLogger())
 	require.NoError(t, goose.Up(sqldb, findMigrationsDir()))
 
-	_, err = sqldb.Exec("PRAGMA foreign_keys = ON")
+	_, err = sqldb.Exec(store.ForeignKeysPragma)
 	require.NoError(t, err)
 
 	db := bun.NewDB(sqldb, sqlitedialect.New())
@@ -136,7 +137,7 @@ func TestMigration_Idempotent(t *testing.T) {
 	db := newTestBunDB(t)
 
 	sqldb := db.DB
-	goose.SetDialect("sqlite3")
+	goose.SetDialect(store.GooseDialect)
 	goose.SetLogger(goose.NopLogger())
 	require.NoError(t, goose.Up(sqldb, findMigrationsDir()))
 
@@ -149,7 +150,7 @@ func TestMigration_DownThenUp(t *testing.T) {
 	db := newTestBunDB(t)
 
 	sqldb := db.DB
-	goose.SetDialect("sqlite3")
+	goose.SetDialect(store.GooseDialect)
 	goose.SetLogger(goose.NopLogger())
 
 	require.NoError(t, goose.Down(sqldb, findMigrationsDir()))

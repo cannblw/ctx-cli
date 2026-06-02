@@ -21,11 +21,11 @@ func NewTestDB(t *testing.T) store.ContextStore {
 
 	dir := t.TempDir()
 	dbPath := filepath.Join(dir, "test.db")
-	sqldb, err := sql.Open("sqlite", dbPath)
+	sqldb, err := sql.Open(store.DriverName, dbPath)
 	require.NoError(t, err)
 	t.Cleanup(func() { sqldb.Close() })
 
-	goose.SetDialect("sqlite3")
+	goose.SetDialect(store.GooseDialect)
 	goose.SetLogger(goose.NopLogger())
 	migrationsDir := findMigrationsDir()
 	require.NoError(t, goose.Up(sqldb, migrationsDir))

@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/cannblw/ctx-cli/cmd"
-	"github.com/cannblw/ctx-cli/pkg/repo"
+	"github.com/cannblw/ctx-cli/pkg/store"
 )
 
 func main() {
@@ -17,7 +17,7 @@ func main() {
 	}
 	dbPath := filepath.Join(home, ".ctx", "ctx.db")
 
-	r, err := repo.NewBunStore(dbPath)
+	r, err := store.NewBunStore(dbPath)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "error: cannot open database:", err)
 		os.Exit(1)

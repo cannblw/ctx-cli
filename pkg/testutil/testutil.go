@@ -13,10 +13,10 @@ import (
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/sqlitedialect"
 
-	"github.com/cannblw/ctx-cli/pkg/repo"
+	"github.com/cannblw/ctx-cli/pkg/store"
 )
 
-func NewTestDB(t *testing.T) repo.ContextStore {
+func NewTestDB(t *testing.T) store.ContextStore {
 	t.Helper()
 
 	dir := t.TempDir()
@@ -32,7 +32,7 @@ func NewTestDB(t *testing.T) repo.ContextStore {
 
 	db := bun.NewDB(sqldb, sqlitedialect.New())
 	t.Cleanup(func() { db.Close() })
-	return repo.NewBunStoreFromDB(db)
+	return store.NewBunStoreFromDB(db)
 }
 
 func findMigrationsDir() string {

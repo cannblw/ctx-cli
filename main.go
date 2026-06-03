@@ -9,13 +9,18 @@ import (
 	"github.com/cannblw/ctx-cli/pkg/store"
 )
 
+const (
+	DBDir  = ".ctx"
+	DBFile = "ctx.db"
+)
+
 func main() {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "error: cannot find home directory:", err)
 		os.Exit(1)
 	}
-	dbPath := filepath.Join(home, store.DBDir, store.DBFile)
+	dbPath := filepath.Join(home, DBDir, DBFile)
 
 	s, err := store.New(dbPath)
 	if err != nil {

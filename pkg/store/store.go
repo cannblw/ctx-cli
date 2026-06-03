@@ -19,8 +19,6 @@ const (
 	DriverName        = "sqlite"
 	GooseDialect      = "sqlite3"
 	ForeignKeysPragma = "PRAGMA foreign_keys = ON"
-	DBDir             = ".ctx"
-	DBFile            = "ctx.db"
 )
 
 type Store struct {

@@ -29,14 +29,19 @@ The binary lands at `bin/ctx`.
 ## Quick start
 
 ```sh
-ctx new my-project --desc "Refactoring the auth module"
+ctx new my-context --desc "Refactoring the auth module"
 ctx contexts
 ```
 
 ## Usage
 
 ```sh
-ctx --help
+# Create a context
+ctx new my-context --description "Refactoring the auth module"
+
+# List all contexts
+ctx contexts
+# or: ctx c, ctx ctx
 ```
 
 ## License

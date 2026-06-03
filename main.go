@@ -30,7 +30,10 @@ func main() {
 	defer s.Close()
 
 	rootCmd := cmd.NewRootCmd()
-	rootCmd.AddCommand(cmd.NewNewCmd(s, os.Stdout))
+	rootCmd.AddCommand(
+		cmd.NewNewCmd(s, os.Stdout),
+		cmd.NewContextsCmd(s, os.Stdout),
+	)
 
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)

@@ -20,6 +20,8 @@ If cobra-cli is missing: `go install github.com/spf13/cobra-cli@latest`.
 
 Prefer composite literals over `new()`: `&bytes.Buffer{}` not `new(bytes.Buffer)`. Use `new()` only when a pointer to a zero value is needed and no fields are available (e.g. `new(int)`).
 
+Use `New<Type>()` for constructors: `NewStore()`, `NewStoreFromDB()`. Not bare `New()`.
+
 ## Architecture
 
 ### No premature interfaces

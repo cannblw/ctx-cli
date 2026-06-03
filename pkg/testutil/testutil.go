@@ -35,5 +35,5 @@ func NewTestDB(t *testing.T) *store.Store {
 
 	db := bun.NewDB(sqldb, sqlitedialect.New())
 	t.Cleanup(func() { db.Close() })
-	return store.NewFromDB(db)
+	return store.NewStoreFromDB(db)
 }

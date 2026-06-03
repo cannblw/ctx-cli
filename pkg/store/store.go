@@ -25,7 +25,7 @@ type Store struct {
 	db *bun.DB
 }
 
-func New(dbPath string) (*Store, error) {
+func NewStore(dbPath string) (*Store, error) {
 	dir := filepath.Dir(dbPath)
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return nil, fmt.Errorf("could not create db dir: %w", err)
@@ -53,7 +53,7 @@ func New(dbPath string) (*Store, error) {
 	return &Store{db: db}, nil
 }
 
-func NewFromDB(db *bun.DB) *Store {
+func NewStoreFromDB(db *bun.DB) *Store {
 	return &Store{db: db}
 }
 

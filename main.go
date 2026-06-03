@@ -22,7 +22,7 @@ func main() {
 	}
 	dbPath := filepath.Join(home, DBDir, DBFile)
 
-	s, err := store.New(dbPath)
+	s, err := store.NewStore(dbPath)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "could not open database:", err)
 		os.Exit(1)

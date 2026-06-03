@@ -33,3 +33,11 @@ func (s *Store) ListContexts(ctx context.Context) ([]models.Context, error) {
 	err := s.db.NewSelect().Model(&contexts).OrderExpr("created_at ASC").Scan(ctx)
 	return contexts, err
 }
+
+func (s *Store) DeleteContext(ctx context.Context, name string) error {
+	_, err := s.db.NewDelete().
+		Model((*models.Context)(nil)).
+		Where("name = ?", name).
+		Exec(ctx)
+	return err
+}

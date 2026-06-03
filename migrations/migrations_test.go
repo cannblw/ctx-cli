@@ -41,7 +41,7 @@ func newTestBunDB(t *testing.T) *bun.DB {
 	return db
 }
 
-func TestMigration_CreatesDefaultStates(t *testing.T) {
+func TestMigration_SuccessCreatesDefaultStates(t *testing.T) {
 	db := newTestBunDB(t)
 
 	var states []models.State
@@ -53,13 +53,16 @@ func TestMigration_CreatesDefaultStates(t *testing.T) {
 	assert.False(t, states[0].Orphaned)
 	assert.Equal(t, "in-progress", states[1].Name)
 	assert.Equal(t, 1, states[1].Position)
+	assert.False(t, states[1].Orphaned)
 	assert.Equal(t, "review", states[2].Name)
 	assert.Equal(t, 2, states[2].Position)
+	assert.False(t, states[2].Orphaned)
 	assert.Equal(t, "done", states[3].Name)
 	assert.Equal(t, 3, states[3].Position)
+	assert.False(t, states[3].Orphaned)
 }
 
-func TestMigration_CreatesContextsTable(t *testing.T) {
+func TestMigration_SuccessCreatesContextsTable(t *testing.T) {
 	db := newTestBunDB(t)
 
 	c := &models.Context{
@@ -72,7 +75,7 @@ func TestMigration_CreatesContextsTable(t *testing.T) {
 	assert.False(t, c.CreatedAt.IsZero())
 }
 
-func TestMigration_CreatesItemsTable(t *testing.T) {
+func TestMigration_SuccessCreatesItemsTable(t *testing.T) {
 	db := newTestBunDB(t)
 
 	c := &models.Context{Name: "items-test"}
@@ -95,36 +98,7 @@ func TestMigration_CreatesItemsTable(t *testing.T) {
 	assert.NotZero(t, item.ID)
 }
 
-func TestMigration_ContextForeignKey(t *testing.T) {
-	db := newTestBunDB(t)
-
-	c := &models.Context{Name: "fk-test"}
-	_, err := db.NewInsert().Model(c).Exec(context.Background())
-	require.NoError(t, err)
-
-	state := new(models.State)
-	err = db.NewSelect().Model(state).Where("name = ?", "todo").Scan(context.Background())
-	require.NoError(t, err)
-
-	item := &models.Item{
-		Slug:      "fk-slug",
-		ContextID: &c.ID,
-		Type:      "pr",
-		Value:     "https://github.com/a/b/pull/1",
-		StateID:   &state.ID,
-	}
-	_, err = db.NewInsert().Model(item).Exec(context.Background())
-	require.NoError(t, err)
-
-	_, err = db.NewDelete().Model((*models.Context)(nil)).Where("id = ?", c.ID).Exec(context.Background())
-	require.NoError(t, err)
-
-	count, err := db.NewSelect().Model((*models.Item)(nil)).Where("slug = ?", "fk-slug").Count(context.Background())
-	require.NoError(t, err)
-	assert.Equal(t, 0, count, "item should be cascade-deleted with context")
-}
-
-func TestMigration_Idempotent(t *testing.T) {
+func TestMigration_SuccessIdempotent(t *testing.T) {
 	db := newTestBunDB(t)
 
 	sqldb := db.DB
@@ -137,7 +111,7 @@ func TestMigration_Idempotent(t *testing.T) {
 	assert.Equal(t, 4, count, "migration should be idempotent")
 }
 
-func TestMigration_DownThenUp(t *testing.T) {
+func TestMigration_SuccessDownThenUp(t *testing.T) {
 	db := newTestBunDB(t)
 
 	sqldb := db.DB
@@ -155,15 +129,4 @@ func TestMigration_DownThenUp(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, 4, count, "states should be restored after re-running up")
 	_ = count
-}
-
-func TestMigration_DefaultStatesNotOrphaned(t *testing.T) {
-	db := newTestBunDB(t)
-
-	var states []models.State
-	err := db.NewSelect().Model(&states).Scan(context.Background())
-	require.NoError(t, err)
-	for _, s := range states {
-		assert.False(t, s.Orphaned, "default state %q should not be orphaned", s.Name)
-	}
 }

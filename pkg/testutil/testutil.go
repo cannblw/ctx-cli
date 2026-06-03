@@ -30,6 +30,9 @@ func NewTestDB(t *testing.T) *store.Store {
 	goose.SetBaseFS(migrations.FS)
 	require.NoError(t, goose.Up(sqldb, "."))
 
+	_, err = sqldb.Exec(store.ForeignKeysPragma)
+	require.NoError(t, err)
+
 	db := bun.NewDB(sqldb, sqlitedialect.New())
 	t.Cleanup(func() { db.Close() })
 	return store.NewFromDB(db)

@@ -10,7 +10,7 @@ import (
 	"github.com/cannblw/ctx-cli/pkg/store"
 )
 
-func NewNewCmd(r store.ContextStore, stdout io.Writer) *cobra.Command {
+func NewNewCmd(s *store.Store, stdout io.Writer) *cobra.Command {
 	var descFlag string
 
 	cmd := &cobra.Command{
@@ -30,7 +30,7 @@ Examples:
 			}
 
 			ctx := context.Background()
-			c, err := r.CreateContext(ctx, name, descFlag)
+			c, err := s.CreateContext(ctx, name, descFlag)
 			if err != nil {
 				return fmt.Errorf("creating context: %w", err)
 			}

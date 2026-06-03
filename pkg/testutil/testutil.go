@@ -16,7 +16,7 @@ import (
 	"github.com/cannblw/ctx-cli/pkg/store"
 )
 
-func NewTestDB(t *testing.T) store.ContextStore {
+func NewTestDB(t *testing.T) *store.Store {
 	t.Helper()
 
 	dir := t.TempDir()
@@ -32,5 +32,5 @@ func NewTestDB(t *testing.T) store.ContextStore {
 
 	db := bun.NewDB(sqldb, sqlitedialect.New())
 	t.Cleanup(func() { db.Close() })
-	return store.NewBunStoreFromDB(db)
+	return store.NewFromDB(db)
 }

@@ -17,15 +17,15 @@ func main() {
 	}
 	dbPath := filepath.Join(home, store.DBDir, store.DBFile)
 
-	r, err := store.NewBunStore(dbPath)
+	s, err := store.New(dbPath)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "error: cannot open database:", err)
 		os.Exit(1)
 	}
-	defer r.Close()
+	defer s.Close()
 
 	rootCmd := cmd.NewRootCmd()
-	rootCmd.AddCommand(cmd.NewNewCmd(r, os.Stdout))
+	rootCmd.AddCommand(cmd.NewNewCmd(s, os.Stdout))
 
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)

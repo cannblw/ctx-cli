@@ -14,7 +14,7 @@ func (s *Store) CreateContext(ctx context.Context, name, description string) (*m
 	}
 	_, err := s.db.NewInsert().Model(c).Exec(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("create context: %w", err)
+		return nil, fmt.Errorf("could not insert context: %w", err)
 	}
 	return c, nil
 }
@@ -23,7 +23,7 @@ func (s *Store) GetContext(ctx context.Context, name string) (*models.Context, e
 	c := new(models.Context)
 	err := s.db.NewSelect().Model(c).Where("name = ?", name).Scan(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("get context %q: %w", name, err)
+		return nil, fmt.Errorf("could not get context %q: %w", name, err)
 	}
 	return c, nil
 }

@@ -17,14 +17,14 @@ const (
 func main() {
 	home, err := os.UserHomeDir()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "error: cannot find home directory:", err)
+		fmt.Fprintln(os.Stderr, "could not find home directory:", err)
 		os.Exit(1)
 	}
 	dbPath := filepath.Join(home, DBDir, DBFile)
 
 	s, err := store.New(dbPath)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "error: cannot open database:", err)
+		fmt.Fprintln(os.Stderr, "could not open database:", err)
 		os.Exit(1)
 	}
 	defer s.Close()

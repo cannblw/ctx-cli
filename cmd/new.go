@@ -32,7 +32,7 @@ Examples:
 			ctx := context.Background()
 			c, err := s.CreateContext(ctx, name, descFlag)
 			if err != nil {
-				return fmt.Errorf("creating context: %w", err)
+				return fmt.Errorf("could not create context: %w", err)
 			}
 
 			fmt.Fprintf(stdout, "Created context %q (id: %d)\n", c.Name, c.ID)

@@ -18,6 +18,8 @@ If cobra-cli is missing: `go install github.com/spf13/cobra-cli@latest`.
 
 **Doc comments for all public things.** Every exported function, method, type, constant, and variable must have a doc comment starting with the name of the thing it describes (Go convention).
 
+Prefer composite literals over `new()`: `&bytes.Buffer{}` not `new(bytes.Buffer)`. Use `new()` only when a pointer to a zero value is needed and no fields are available (e.g. `new(int)`).
+
 ## Architecture
 
 ### No premature interfaces

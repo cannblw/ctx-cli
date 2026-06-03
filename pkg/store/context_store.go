@@ -20,7 +20,7 @@ func (s *Store) CreateContext(ctx context.Context, name, description string) (*m
 }
 
 func (s *Store) GetContext(ctx context.Context, name string) (*models.Context, error) {
-	c := new(models.Context)
+	c := &models.Context{}
 	err := s.db.NewSelect().Model(c).Where("name = ?", name).Scan(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("could not get context %q: %w", name, err)

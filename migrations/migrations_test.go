@@ -84,7 +84,7 @@ func TestMigration_SuccessCreatesItemsTable(t *testing.T) {
 	_, err := db.NewInsert().Model(c).Exec(context.Background())
 	require.NoError(t, err)
 
-	state := new(models.State)
+	state := &models.State{}
 	err = db.NewSelect().Model(state).Where("name = ?", "todo").Scan(context.Background())
 	require.NoError(t, err)
 

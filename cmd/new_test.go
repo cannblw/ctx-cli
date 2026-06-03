@@ -16,7 +16,7 @@ import (
 
 func TestNewCommand_Success(t *testing.T) {
 	s := testutil.NewTestDB(t)
-	buf := new(bytes.Buffer)
+	buf := &bytes.Buffer{}
 
 	newCmd := cmd.NewNewCmd(s, buf)
 	newCmd.SetArgs([]string{"fix-auth"})
@@ -35,7 +35,7 @@ func TestNewCommand_Success(t *testing.T) {
 
 func TestNewCommand_SuccessWithDescription(t *testing.T) {
 	s := testutil.NewTestDB(t)
-	buf := new(bytes.Buffer)
+	buf := &bytes.Buffer{}
 
 	newCmd := cmd.NewNewCmd(s, buf)
 	newCmd.SetArgs([]string{"fix-auth", "--description", "Auth bugfix"})
@@ -54,7 +54,7 @@ func TestNewCommand_SuccessWithDescription(t *testing.T) {
 
 func TestNewCommand_SuccessAliasN(t *testing.T) {
 	s := testutil.NewTestDB(t)
-	buf := new(bytes.Buffer)
+	buf := &bytes.Buffer{}
 
 	newCmd := cmd.NewNewCmd(s, buf)
 	newCmd.SetArgs([]string{"via-alias"})
@@ -73,7 +73,7 @@ func TestNewCommand_SuccessAliasN(t *testing.T) {
 
 func TestNewCommand_ErrorNoArgs(t *testing.T) {
 	s := testutil.NewTestDB(t)
-	buf := new(bytes.Buffer)
+	buf := &bytes.Buffer{}
 
 	newCmd := cmd.NewNewCmd(s, buf)
 	newCmd.SetArgs([]string{})
@@ -85,7 +85,7 @@ func TestNewCommand_ErrorNoArgs(t *testing.T) {
 
 func TestNewCommand_ErrorDuplicateName(t *testing.T) {
 	s := testutil.NewTestDB(t)
-	buf := new(bytes.Buffer)
+	buf := &bytes.Buffer{}
 
 	newCmd := cmd.NewNewCmd(s, buf)
 	newCmd.SetArgs([]string{"same"})

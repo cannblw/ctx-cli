@@ -36,7 +36,15 @@ Migrations are embedded with `//go:embed *.sql`, never discovered via CWD-relati
 
 ## Constants
 
-Extract strings magic strings and numbers as constants.
+Extract strings magic strings and numbers as constants. If a constant is used only in one file, keep it unexported in that file. If tests need it, export it in the owning package.
+
+Production runtime values (paths, timeouts, etc) belong in the entry point, not in reusable packages. A package should not own opinions that only `main` cares about.
+
+## Errors
+
+Error strings are inline by default. Only extract as an exported sentinel (`var ErrNotFound = errors.New("...")`) when callers need to compare errors with `errors.Is` or `errors.As`. Error wrapping prefixes (`"could not open file: %w"`) are never constants, as the pattern is self-documenting.
+
+Use `"could not"` form for all error wrapping: `"could not open file: %w"`, `"could not parse config: %w"`, `"could not create context: %w"`. Not bare verb (`"open"`, `"parse"`) or gerund (`"opening"`, `"parsing"`).
 
 ## CLI output
 
@@ -58,8 +66,24 @@ Success tests first, then error tests. Simple before complex.
 
 ### Granularity
 
-Distinct behaviors get their own test (e.g. with/without `--desc`). Fold trivial assertions (output format, ID presence) into the main Success test. Don't test framework behavior, test your own domain decisions.
+Distinct behaviors get their own test (e.g. with/without `--description`). Fold trivial assertions (output format, ID presence) into the main Success test. Don't test framework behavior, test your own domain decisions.
 
 ### Location
 
 Tests live next to what they test: `cmd/new_test.go`, `migrations/migrations_test.go`. Don't put migration tests in `pkg/store/` just because they share a test helper.
+
+### Section comments
+
+Group tests with section comments, even if there's only one group. Section comments are 80 characters wide, padded with `─` to fill:
+
+```go
+// ── new successes ────────────────────────────────────────────────────────────
+
+func TestNewCommand_Success(t *testing.T) { ... }
+
+// ── new errors ───────────────────────────────────────────────────────────────
+
+func TestNewCommand_ErrorNoArgs(t *testing.T) { ... }
+```
+
+Since these are integration tests (real DB, no mocks), section names describe the behavior domain, not specific method names (e.g. `Context creation`, not `CreateContext`).

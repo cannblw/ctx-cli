@@ -11,7 +11,7 @@ import (
 	"github.com/cannblw/ctx-cli/pkg/testutil"
 )
 
-// ── CreateContext successes ──────────────────────────────────────────
+// ── Context creation ─────────────────────────────────────────────────────────
 
 func TestCreateContext_Success(t *testing.T) {
 	s := testutil.NewTestDB(t)
@@ -36,7 +36,7 @@ func TestCreateContext_SuccessEmptyDescription(t *testing.T) {
 	assert.NotZero(t, c.ID)
 }
 
-// ── GetContext successes ─────────────────────────────────────────────
+// ── Context retrieval ────────────────────────────────────────────────────────
 
 func TestGetContext_Success(t *testing.T) {
 	s := testutil.NewTestDB(t)
@@ -51,7 +51,7 @@ func TestGetContext_Success(t *testing.T) {
 	assert.Equal(t, "desc", got.Description)
 }
 
-// ── ListContexts successes ───────────────────────────────────────────
+// ── Context listing ──────────────────────────────────────────────────────────
 
 func TestListContexts_SuccessEmpty(t *testing.T) {
 	s := testutil.NewTestDB(t)
@@ -91,7 +91,7 @@ func TestListContexts_SuccessOrdered(t *testing.T) {
 	assert.Equal(t, "c", contexts[2].Name)
 }
 
-// ── DeleteContext successes ──────────────────────────────────────────
+// ── Context deletion ─────────────────────────────────────────────────────────
 
 func TestContext_SuccessDeleteCascadesItems(t *testing.T) {
 	s := testutil.NewTestDB(t)
@@ -120,7 +120,7 @@ func TestContext_SuccessDeleteCascadesItems(t *testing.T) {
 	assert.Error(t, err, "item should be cascade-deleted")
 }
 
-// ── CreateContext errors ─────────────────────────────────────────────
+// ── Context creation errors ──────────────────────────────────────────────────
 
 func TestCreateContext_ErrorDuplicateName(t *testing.T) {
 	s := testutil.NewTestDB(t)
@@ -133,7 +133,7 @@ func TestCreateContext_ErrorDuplicateName(t *testing.T) {
 	assert.Error(t, err)
 }
 
-// ── GetContext errors ────────────────────────────────────────────────
+// ── Context retrieval errors ─────────────────────────────────────────────────
 
 func TestGetContext_ErrorNotFound(t *testing.T) {
 	s := testutil.NewTestDB(t)

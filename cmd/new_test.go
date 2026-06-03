@@ -12,6 +12,8 @@ import (
 	"github.com/cannblw/ctx-cli/pkg/testutil"
 )
 
+// ── New command ──────────────────────────────────────────────────────────────
+
 func TestNewCommand_Success(t *testing.T) {
 	s := testutil.NewTestDB(t)
 	buf := new(bytes.Buffer)
@@ -66,6 +68,8 @@ func TestNewCommand_SuccessAliasN(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, "via-alias", got.Name)
 }
+
+// ── New command errors ───────────────────────────────────────────────────────
 
 func TestNewCommand_ErrorNoArgs(t *testing.T) {
 	s := testutil.NewTestDB(t)

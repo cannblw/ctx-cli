@@ -41,6 +41,8 @@ func newTestBunDB(t *testing.T) *bun.DB {
 	return db
 }
 
+// ── Migration table creation ─────────────────────────────────────────────────
+
 func TestMigration_SuccessCreatesDefaultStates(t *testing.T) {
 	db := newTestBunDB(t)
 
@@ -97,6 +99,8 @@ func TestMigration_SuccessCreatesItemsTable(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotZero(t, item.ID)
 }
+
+// ── Migration idempotency ────────────────────────────────────────────────────
 
 func TestMigration_SuccessIdempotent(t *testing.T) {
 	db := newTestBunDB(t)

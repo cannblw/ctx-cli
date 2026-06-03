@@ -21,7 +21,7 @@ func NewNewCmd(s *store.Store, stdout io.Writer) *cobra.Command {
 
 Examples:
   ctx new fix-auth-bug
-  ctx n upgrade-auth --desc "Refactor OIDC flow to support multi-tenant"`,
+  ctx n upgrade-auth --description "Refactor OIDC flow to support multi-tenant"`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name := args[0]
@@ -40,6 +40,6 @@ Examples:
 		},
 	}
 
-	cmd.Flags().StringVar(&descFlag, "desc", "", "description for the context")
+	cmd.Flags().StringVarP(&descFlag, "description", "d", "", "description for the context")
 	return cmd
 }

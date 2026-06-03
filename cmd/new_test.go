@@ -36,7 +36,7 @@ func TestNewCommand_SuccessWithDescription(t *testing.T) {
 	buf := new(bytes.Buffer)
 
 	newCmd := cmd.NewNewCmd(s, buf)
-	newCmd.SetArgs([]string{"fix-auth", "--desc", "Auth bugfix"})
+	newCmd.SetArgs([]string{"fix-auth", "--description", "Auth bugfix"})
 	err := newCmd.Execute()
 
 	require.NoError(t, err)

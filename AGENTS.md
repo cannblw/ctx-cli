@@ -42,8 +42,6 @@ Use Go's `internal` directory to hide implementation details from external consu
 - **`cmd/internal/`** — private to CLI commands. Only code under `cmd/` can import these packages. Use this for shared CLI utilities (formatting, validation helpers, etc.) that are not part of the library surface.
 - **`internal/`** at repo root — code shared between `cmd/` and `pkg/` that must not be exported. Only importable within this module.
 
-Follow the Go project's own convention: `cmd/go/internal/` contains ~40 packages used only by the `go` command.
-
 ## Migrations
 
 ### Embed via go:embed

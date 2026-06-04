@@ -17,7 +17,7 @@ func NewRenameCmd(s *store.Store, cfg *config.Config, stdout io.Writer) *cobra.C
 		Use:     "rename <old-name> <new-name>",
 		Aliases: []string{"rn"},
 		Short:   "Rename a context",
-		Long: `Rename a context. If the active context is renamed, the active pointer
+		Long: `Rename a context. If the active context is renamed, the active context
 is updated automatically.
 
 Examples:

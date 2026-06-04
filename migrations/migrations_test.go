@@ -64,6 +64,16 @@ func TestMigration_SuccessCreatesDefaultStates(t *testing.T) {
 	assert.False(t, states[3].Orphaned)
 }
 
+func TestMigration_SuccessPreseedsGlobalContext(t *testing.T) {
+	db := newTestBunDB(t)
+
+	c := &models.Context{}
+	err := db.NewSelect().Model(c).Where("name = ?", "global").Scan(context.Background())
+	require.NoError(t, err)
+	assert.Equal(t, "global", c.Name)
+	assert.Equal(t, "Default global context", c.Description)
+}
+
 func TestMigration_SuccessCreatesContextsTable(t *testing.T) {
 	db := newTestBunDB(t)
 
@@ -122,6 +132,7 @@ func TestMigration_SuccessDownThenUp(t *testing.T) {
 	goose.SetDialect(store.GooseDialect)
 	goose.SetLogger(goose.NopLogger())
 
+	require.NoError(t, goose.Down(sqldb, "."))
 	require.NoError(t, goose.Down(sqldb, "."))
 
 	count, err := db.NewSelect().Model((*models.State)(nil)).Count(context.Background())

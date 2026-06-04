@@ -32,7 +32,7 @@ func Load() (*Config, error) {
 	v.SetConfigType("yaml")
 
 	if _, err := os.Stat(Path()); os.IsNotExist(err) {
-		v.Set("current_context", "")
+		v.Set("current_context", "global")
 		if err := v.WriteConfigAs(Path()); err != nil {
 			return nil, fmt.Errorf("could not write config: %w", err)
 		}

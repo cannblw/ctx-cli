@@ -23,7 +23,8 @@ func TestContextsCommand_SuccessEmpty(t *testing.T) {
 	ctxCmd.SetArgs([]string{})
 	require.NoError(t, ctxCmd.Execute())
 
-	assert.Contains(t, buf.String(), "No contexts yet")
+	assert.Contains(t, buf.String(), "global")
+	assert.Contains(t, buf.String(), "Default global context")
 }
 
 func TestContextsCommand_SuccessWithContexts(t *testing.T) {

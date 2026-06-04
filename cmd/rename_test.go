@@ -144,7 +144,7 @@ func TestRenameCommand_ErrorOldNotFound(t *testing.T) {
 	err := renameCmd.Execute()
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "not found")
+	assert.Contains(t, err.Error(), "database update matched no rows")
 }
 
 func TestRenameCommand_ErrorNoArgs(t *testing.T) {

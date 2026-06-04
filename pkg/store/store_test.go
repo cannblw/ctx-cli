@@ -176,7 +176,7 @@ func TestRenameContext_ErrorOldNotFound(t *testing.T) {
 
 	_, err := s.RenameContext(context.Background(), "nope", "yep")
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "not found")
+	assert.Contains(t, err.Error(), "database update matched no rows")
 }
 
 // ── Context retrieval errors ─────────────────────────────────────────────────

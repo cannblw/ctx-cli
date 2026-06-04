@@ -51,7 +51,7 @@ func (s *Store) RenameContext(ctx context.Context, oldName, newName string) (*mo
 	}
 	rows, _ := res.RowsAffected()
 	if rows == 0 {
-		return nil, fmt.Errorf("could not rename context %q: not found", oldName)
+		return nil, fmt.Errorf("could not rename context %q: database update matched no rows", oldName)
 	}
 
 	return s.GetContext(ctx, newName)

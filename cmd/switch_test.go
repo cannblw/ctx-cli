@@ -46,11 +46,11 @@ func TestSwitchCommand_SuccessSwitchToContext(t *testing.T) {
 	require.NoError(t, switchCmd.Execute())
 
 	assert.Contains(t, buf.String(), `Switched to context "fix-auth"`)
-	assert.Equal(t, "fix-auth", cfg.ActiveContext)
+	assert.Equal(t, "fix-auth", cfg.CurrentContext)
 
 	loaded, err := config.Load()
 	require.NoError(t, err)
-	assert.Equal(t, "fix-auth", loaded.ActiveContext)
+	assert.Equal(t, "fix-auth", loaded.CurrentContext)
 }
 
 func TestSwitchCommand_ErrorEmptyName(t *testing.T) {
@@ -166,5 +166,5 @@ func TestSwitchCommand_SuccessPersistedToFile(t *testing.T) {
 	require.NoError(t, switchCmd.Execute())
 
 	data := readConfigFile(t)
-	assert.Contains(t, data, "active_context: fix-auth")
+	assert.Contains(t, data, "current_context: fix-auth")
 }

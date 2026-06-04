@@ -81,7 +81,7 @@ func TestContextsCommand_SuccessSwitchWithName(t *testing.T) {
 	require.NoError(t, ctxCmd.Execute())
 
 	assert.Contains(t, buf.String(), `Switched to context "fix-auth"`)
-	assert.Equal(t, "fix-auth", cfg.ActiveContext)
+	assert.Equal(t, "fix-auth", cfg.CurrentContext)
 }
 
 func TestContextsCommand_ErrorSwitchEmptyName(t *testing.T) {

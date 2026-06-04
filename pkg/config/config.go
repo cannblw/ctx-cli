@@ -9,7 +9,7 @@ import (
 )
 
 type Config struct {
-	ActiveContext string `mapstructure:"active_context"`
+	CurrentContext string `mapstructure:"current_context"`
 	v             *viper.Viper
 }
 
@@ -32,7 +32,7 @@ func Load() (*Config, error) {
 	v.SetConfigType("yaml")
 
 	if _, err := os.Stat(Path()); os.IsNotExist(err) {
-		v.Set("active_context", "")
+		v.Set("current_context", "")
 		if err := v.WriteConfigAs(Path()); err != nil {
 			return nil, fmt.Errorf("could not write config: %w", err)
 		}
@@ -50,7 +50,7 @@ func Load() (*Config, error) {
 }
 
 func (c *Config) Save() error {
-	c.v.Set("active_context", c.ActiveContext)
+	c.v.Set("current_context", c.CurrentContext)
 	if err := c.v.WriteConfig(); err != nil {
 		return fmt.Errorf("could not write config: %w", err)
 	}

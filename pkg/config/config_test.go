@@ -19,7 +19,7 @@ func TestLoad_SuccessCreatesDefault(t *testing.T) {
 
 	cfg, err := config.Load()
 	require.NoError(t, err)
-	assert.Empty(t, cfg.ActiveContext)
+	assert.Empty(t, cfg.CurrentContext)
 
 	_, err = os.Stat(filepath.Join(tmp, ".ctx", "config.yaml"))
 	require.NoError(t, err)
@@ -33,13 +33,13 @@ func TestLoad_SuccessReadsExisting(t *testing.T) {
 	require.NoError(t, os.MkdirAll(cfgDir, 0755))
 	require.NoError(t, os.WriteFile(
 		filepath.Join(cfgDir, "config.yaml"),
-		[]byte("active_context: fix-auth\n"),
+		[]byte("current_context: fix-auth\n"),
 		0644,
 	))
 
 	cfg, err := config.Load()
 	require.NoError(t, err)
-	assert.Equal(t, "fix-auth", cfg.ActiveContext)
+	assert.Equal(t, "fix-auth", cfg.CurrentContext)
 }
 
 // ── Load errors ───────────────────────────────────────────────────────────────
@@ -69,28 +69,28 @@ func TestSave_SuccessRoundTrip(t *testing.T) {
 	cfg, err := config.Load()
 	require.NoError(t, err)
 
-	cfg.ActiveContext = "migrate-db"
+	cfg.CurrentContext = "migrate-db"
 	require.NoError(t, cfg.Save())
 
 	loaded, err := config.Load()
 	require.NoError(t, err)
-	assert.Equal(t, "migrate-db", loaded.ActiveContext)
+	assert.Equal(t, "migrate-db", loaded.CurrentContext)
 }
 
-func TestSave_SuccessClearsActiveContext(t *testing.T) {
+func TestSave_SuccessClearsCurrentContext(t *testing.T) {
 	tmp := t.TempDir()
 	t.Setenv("HOME", tmp)
 
 	cfg, err := config.Load()
 	require.NoError(t, err)
 
-	cfg.ActiveContext = "temp-ctx"
+	cfg.CurrentContext = "temp-ctx"
 	require.NoError(t, cfg.Save())
 
-	cfg.ActiveContext = ""
+	cfg.CurrentContext = ""
 	require.NoError(t, cfg.Save())
 
 	loaded, err := config.Load()
 	require.NoError(t, err)
-	assert.Empty(t, loaded.ActiveContext)
+	assert.Empty(t, loaded.CurrentContext)
 }

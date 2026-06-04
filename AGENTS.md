@@ -34,6 +34,14 @@ Define interfaces at the call site, not at the producer. A concrete struct (`typ
 
 Don't add methods returning `fmt.Errorf("not implemented")`. Add them when the task that needs them lands.
 
+### Internal packages
+
+Use Go's `internal` directory to hide implementation details from external consumers. The compiler enforces that `internal` packages can only be imported by code in the parent tree:
+
+- **`pkg/`** — public API. Anything here can be imported by external code.
+- **`cmd/internal/`** — private to CLI commands. Only code under `cmd/` can import these packages. Use this for shared CLI utilities (formatting, validation helpers, etc.) that are not part of the library surface.
+- **`internal/`** at repo root — code shared between `cmd/` and `pkg/` that must not be exported. Only importable within this module.
+
 ## Migrations
 
 ### Embed via go:embed
@@ -51,6 +59,10 @@ Production runtime values (paths, timeouts, etc) belong in the entry point, not 
 Error strings are inline by default. Only extract as an exported sentinel (`var ErrNotFound = errors.New("...")`) when callers need to compare errors with `errors.Is` or `errors.As`. Error wrapping prefixes (`"could not open file: %w"`) are never constants, as the pattern is self-documenting.
 
 Use `"could not"` form for all error wrapping: `"could not open file: %w"`, `"could not parse config: %w"`, `"could not create context: %w"`. Not bare verb (`"open"`, `"parse"`) or gerund (`"opening"`, `"parsing"`).
+
+## Pull requests
+
+Use the PR template at `.github/PULL_REQUEST_TEMPLATE.md` for every PR description. Fill in all three sections.
 
 ## CLI output
 

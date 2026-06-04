@@ -6,21 +6,18 @@ import (
 	"path/filepath"
 
 	"github.com/cannblw/ctx-cli/cmd"
+	"github.com/cannblw/ctx-cli/pkg/config"
 	"github.com/cannblw/ctx-cli/pkg/store"
 )
 
-const (
-	DBDir  = ".ctx"
-	DBFile = "ctx.db"
-)
-
 func main() {
-	home, err := os.UserHomeDir()
+	cfg, err := config.Load()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "could not find home directory:", err)
+		fmt.Fprintln(os.Stderr, "could not load config:", err)
 		os.Exit(1)
 	}
-	dbPath := filepath.Join(home, DBDir, DBFile)
+
+	dbPath := filepath.Join(config.Dir(), "ctx.db")
 
 	s, err := store.NewStore(dbPath)
 	if err != nil {
@@ -32,7 +29,8 @@ func main() {
 	rootCmd := cmd.NewRootCmd()
 	rootCmd.AddCommand(
 		cmd.NewNewCmd(s, os.Stdout),
-		cmd.NewContextsCmd(s, os.Stdout),
+		cmd.NewContextsCmd(s, cfg, os.Stdout),
+		cmd.NewSwitchCmd(s, cfg, os.Stdout),
 	)
 
 	if err := rootCmd.Execute(); err != nil {

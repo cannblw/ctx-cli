@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/cannblw/ctx-cli/pkg/config"
 	"github.com/cannblw/ctx-cli/pkg/models"
 	"github.com/cannblw/ctx-cli/pkg/testutil"
 )
@@ -59,7 +60,7 @@ func TestListContexts_SuccessEmpty(t *testing.T) {
 	contexts, err := s.ListContexts(context.Background())
 	require.NoError(t, err)
 	require.Len(t, contexts, 1)
-	assert.Equal(t, "global", contexts[0].Name)
+	assert.Equal(t, config.GlobalContextName, contexts[0].Name)
 }
 
 func TestListContexts_SuccessOneItem(t *testing.T) {
@@ -71,7 +72,7 @@ func TestListContexts_SuccessOneItem(t *testing.T) {
 	contexts, err := s.ListContexts(context.Background())
 	require.NoError(t, err)
 	require.Len(t, contexts, 2)
-	assert.Equal(t, "global", contexts[0].Name)
+	assert.Equal(t, config.GlobalContextName, contexts[0].Name)
 	assert.Equal(t, c.ID, contexts[1].ID)
 	assert.Equal(t, "solo", contexts[1].Name)
 	assert.Equal(t, "only one", contexts[1].Description)
@@ -88,7 +89,7 @@ func TestListContexts_SuccessOrdered(t *testing.T) {
 	contexts, err := s.ListContexts(ctx)
 	require.NoError(t, err)
 	require.Len(t, contexts, 4)
-	assert.Equal(t, "global", contexts[0].Name)
+	assert.Equal(t, config.GlobalContextName, contexts[0].Name)
 	assert.Equal(t, "b", contexts[1].Name)
 	assert.Equal(t, "a", contexts[2].Name)
 	assert.Equal(t, "c", contexts[3].Name)
@@ -118,7 +119,7 @@ func TestContext_SuccessDeleteCascadesItems(t *testing.T) {
 	contexts, err := s.ListContexts(ctx)
 	require.NoError(t, err)
 	assert.Len(t, contexts, 1, "only global context should remain")
-	assert.Equal(t, "global", contexts[0].Name)
+	assert.Equal(t, config.GlobalContextName, contexts[0].Name)
 
 	_, err = s.GetItem(ctx, "cascade-slug")
 	assert.Error(t, err, "item should be cascade-deleted")

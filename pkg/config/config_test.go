@@ -19,7 +19,7 @@ func TestLoad_SuccessCreatesDefault(t *testing.T) {
 
 	cfg, err := config.Load()
 	require.NoError(t, err)
-	assert.Equal(t, "global", cfg.CurrentContext)
+	assert.Equal(t, config.GlobalContextName, cfg.CurrentContext)
 
 	_, err = os.Stat(filepath.Join(tmp, ".ctx", "config.yaml"))
 	require.NoError(t, err)

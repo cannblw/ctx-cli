@@ -15,6 +15,7 @@ import (
 	"github.com/uptrace/bun/dialect/sqlitedialect"
 
 	"github.com/cannblw/ctx-cli/migrations"
+	"github.com/cannblw/ctx-cli/pkg/config"
 	"github.com/cannblw/ctx-cli/pkg/models"
 	"github.com/cannblw/ctx-cli/pkg/store"
 )
@@ -68,9 +69,10 @@ func TestMigration_SuccessPreseedsGlobalContext(t *testing.T) {
 	db := newTestBunDB(t)
 
 	c := &models.Context{}
-	err := db.NewSelect().Model(c).Where("name = ?", "global").Scan(context.Background())
+	err := db.NewSelect().Model(c).Where("name = ?", config.GlobalContextName).Scan(context.Background())
+
 	require.NoError(t, err)
-	assert.Equal(t, "global", c.Name)
+	assert.Equal(t, config.GlobalContextName, c.Name)
 	assert.Equal(t, "Default global context", c.Description)
 }
 

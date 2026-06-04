@@ -109,15 +109,15 @@ func TestSwitchCommand_SuccessSwitchToGlobal(t *testing.T) {
 	buf := &bytes.Buffer{}
 
 	switchCmd := cmd.NewSwitchCmd(s, cfg, buf)
-	switchCmd.SetArgs([]string{"global"})
+	switchCmd.SetArgs([]string{config.GlobalContextName})
 	require.NoError(t, switchCmd.Execute())
 
-	assert.Contains(t, buf.String(), `Switched to context "global"`)
-	assert.Equal(t, "global", cfg.CurrentContext)
+	assert.Contains(t, buf.String(), `Switched to context "`+config.GlobalContextName+`"`)
+	assert.Equal(t, config.GlobalContextName, cfg.CurrentContext)
 
 	loaded, err := config.Load()
 	require.NoError(t, err)
-	assert.Equal(t, "global", loaded.CurrentContext)
+	assert.Equal(t, config.GlobalContextName, loaded.CurrentContext)
 }
 
 // ── Switch command errors ─────────────────────────────────────────────────────

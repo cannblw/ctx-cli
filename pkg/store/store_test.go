@@ -138,7 +138,7 @@ func TestCreateContext_ErrorDuplicateName(t *testing.T) {
 	assert.Error(t, err)
 }
 
-// ── Context renaming ──────────────────────────────────────────────────────────
+// ── Context renaming ─────────────────────────────────────────────────────────
 
 func TestRenameContext_Success(t *testing.T) {
 	s := testutil.NewTestDB(t)
@@ -158,6 +158,8 @@ func TestRenameContext_Success(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, c.ID, got.ID)
 }
+
+// ── Context renaming errors ──────────────────────────────────────────────────
 
 func TestRenameContext_ErrorNewNameExists(t *testing.T) {
 	s := testutil.NewTestDB(t)

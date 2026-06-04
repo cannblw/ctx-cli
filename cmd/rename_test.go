@@ -13,7 +13,7 @@ import (
 	"github.com/cannblw/ctx-cli/pkg/testutil"
 )
 
-// ── Rename command successes ──────────────────────────────────────────────────
+// ── Rename command successes ─────────────────────────────────────────────────
 
 func TestRenameCommand_Success(t *testing.T) {
 	s := testutil.NewTestDB(t)
@@ -85,7 +85,7 @@ func TestRenameCommand_SuccessDoesNotAffectNonActive(t *testing.T) {
 	assert.Equal(t, "other-context", cfg.CurrentContext)
 }
 
-// ── Rename command errors ─────────────────────────────────────────────────────
+// ── Rename command errors ────────────────────────────────────────────────────
 
 func TestRenameCommand_ErrorNewNameExists(t *testing.T) {
 	s := testutil.NewTestDB(t)

@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/cannblw/ctx-cli/cmd"
+	"github.com/cannblw/ctx-cli/pkg/config"
 	"github.com/cannblw/ctx-cli/pkg/testutil"
 )
 
@@ -23,7 +24,8 @@ func TestContextsCommand_SuccessEmpty(t *testing.T) {
 	ctxCmd.SetArgs([]string{})
 	require.NoError(t, ctxCmd.Execute())
 
-	assert.Contains(t, buf.String(), "No contexts yet")
+	assert.Contains(t, buf.String(), config.GlobalContextName)
+	assert.Contains(t, buf.String(), "Default global context")
 }
 
 func TestContextsCommand_SuccessWithContexts(t *testing.T) {
@@ -90,11 +92,11 @@ func TestContextsCommand_SuccessSwitchToGlobal(t *testing.T) {
 	buf := &bytes.Buffer{}
 
 	ctxCmd := cmd.NewContextsCmd(s, cfg, buf)
-	ctxCmd.SetArgs([]string{"global"})
+	ctxCmd.SetArgs([]string{config.GlobalContextName})
 	require.NoError(t, ctxCmd.Execute())
 
-	assert.Contains(t, buf.String(), `Switched to context "global"`)
-	assert.Equal(t, "global", cfg.CurrentContext)
+	assert.Contains(t, buf.String(), `Switched to context "`+config.GlobalContextName+`"`)
+	assert.Equal(t, config.GlobalContextName, cfg.CurrentContext)
 }
 
 func TestContextsCommand_ErrorSwitchEmptyName(t *testing.T) {

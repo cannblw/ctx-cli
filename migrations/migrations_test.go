@@ -15,6 +15,7 @@ import (
 	"github.com/uptrace/bun/dialect/sqlitedialect"
 
 	"github.com/cannblw/ctx-cli/migrations"
+	"github.com/cannblw/ctx-cli/pkg/config"
 	"github.com/cannblw/ctx-cli/pkg/models"
 	"github.com/cannblw/ctx-cli/pkg/store"
 )
@@ -62,6 +63,17 @@ func TestMigration_SuccessCreatesDefaultStates(t *testing.T) {
 	assert.Equal(t, "done", states[3].Name)
 	assert.Equal(t, 3, states[3].Position)
 	assert.False(t, states[3].Orphaned)
+}
+
+func TestMigration_SuccessPreseedsGlobalContext(t *testing.T) {
+	db := newTestBunDB(t)
+
+	c := &models.Context{}
+	err := db.NewSelect().Model(c).Where("name = ?", config.GlobalContextName).Scan(context.Background())
+
+	require.NoError(t, err)
+	assert.Equal(t, config.GlobalContextName, c.Name)
+	assert.Equal(t, "Default global context", c.Description)
 }
 
 func TestMigration_SuccessCreatesContextsTable(t *testing.T) {
@@ -122,6 +134,7 @@ func TestMigration_SuccessDownThenUp(t *testing.T) {
 	goose.SetDialect(store.GooseDialect)
 	goose.SetLogger(goose.NopLogger())
 
+	require.NoError(t, goose.Down(sqldb, "."))
 	require.NoError(t, goose.Down(sqldb, "."))
 
 	count, err := db.NewSelect().Model((*models.State)(nil)).Count(context.Background())

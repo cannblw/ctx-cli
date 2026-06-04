@@ -10,8 +10,10 @@ import (
 
 type Config struct {
 	CurrentContext string `mapstructure:"current_context"`
-	v             *viper.Viper
+	v              *viper.Viper
 }
+
+const GlobalContextName = "global"
 
 func Dir() string {
 	home, _ := os.UserHomeDir()
@@ -32,7 +34,7 @@ func Load() (*Config, error) {
 	v.SetConfigType("yaml")
 
 	if _, err := os.Stat(Path()); os.IsNotExist(err) {
-		v.Set("current_context", "")
+		v.Set("current_context", GlobalContextName)
 		if err := v.WriteConfigAs(Path()); err != nil {
 			return nil, fmt.Errorf("could not write config: %w", err)
 		}

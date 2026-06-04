@@ -36,12 +36,21 @@ ctx contexts
 ## Usage
 
 ```sh
-# Create a context
-ctx new my-context --description "Refactoring the auth module"
+# Create contexts
+ctx new fix-auth --description "Fix the login redirect bug"
+ctx new migrate-db --description "Database migration"
 
-# List all contexts
-ctx contexts
-# or: ctx c, ctx ctx
+# List contexts
+ctx contexts          # or: ctx c, ctx ctx
+
+# Switch to a context
+ctx switch fix-auth   # or: ctx s fix-auth
+
+# `ctx contexts <name>` also switches
+ctx contexts fix-auth
+
+# Add an item to the active context
+ctx add https://github.com/org/repo/pull/42
 ```
 
 ## License

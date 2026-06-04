@@ -16,9 +16,10 @@ import (
 
 func TestContextsCommand_SuccessEmpty(t *testing.T) {
 	s := testutil.NewTestDB(t)
+	cfg := setupConfig(t)
 	buf := &bytes.Buffer{}
 
-	ctxCmd := cmd.NewContextsCmd(s, buf)
+	ctxCmd := cmd.NewContextsCmd(s, cfg, buf)
 	ctxCmd.SetArgs([]string{})
 	require.NoError(t, ctxCmd.Execute())
 
@@ -34,8 +35,9 @@ func TestContextsCommand_SuccessWithContexts(t *testing.T) {
 	_, err = s.CreateContext(ctx, "migrate-db", "")
 	require.NoError(t, err)
 
+	cfg := setupConfig(t)
 	buf := &bytes.Buffer{}
-	ctxCmd := cmd.NewContextsCmd(s, buf)
+	ctxCmd := cmd.NewContextsCmd(s, cfg, buf)
 	ctxCmd.SetArgs([]string{})
 	require.NoError(t, ctxCmd.Execute())
 
@@ -52,8 +54,9 @@ func TestContextsCommand_SuccessAliasC(t *testing.T) {
 	_, err := s.CreateContext(ctx, "fix-auth", "Fix the auth bug")
 	require.NoError(t, err)
 
+	cfg := setupConfig(t)
 	buf := &bytes.Buffer{}
-	ctxCmd := cmd.NewContextsCmd(s, buf)
+	ctxCmd := cmd.NewContextsCmd(s, cfg, buf)
 	ctxCmd.SetArgs([]string{})
 	require.NoError(t, ctxCmd.Execute())
 
@@ -62,14 +65,62 @@ func TestContextsCommand_SuccessAliasC(t *testing.T) {
 	assert.Contains(t, output, "Fix the auth bug")
 }
 
+// ── Contexts command switch-via-name ──────────────────────────────────────────
+
+func TestContextsCommand_SuccessSwitchWithName(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	ctx := context.Background()
+	_, err := s.CreateContext(ctx, "fix-auth", "")
+	require.NoError(t, err)
+
+	cfg := setupConfig(t)
+	buf := &bytes.Buffer{}
+
+	ctxCmd := cmd.NewContextsCmd(s, cfg, buf)
+	ctxCmd.SetArgs([]string{"fix-auth"})
+	require.NoError(t, ctxCmd.Execute())
+
+	assert.Contains(t, buf.String(), `Switched to context "fix-auth"`)
+	assert.Equal(t, "fix-auth", cfg.ActiveContext)
+}
+
+func TestContextsCommand_SuccessSwitchClearWithName(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	cfg := setupConfig(t)
+	cfg.ActiveContext = "fix-auth"
+	require.NoError(t, cfg.Save())
+
+	buf := &bytes.Buffer{}
+	ctxCmd := cmd.NewContextsCmd(s, cfg, buf)
+	ctxCmd.SetArgs([]string{""})
+	require.NoError(t, ctxCmd.Execute())
+
+	assert.Contains(t, buf.String(), "Cleared active context")
+	assert.Empty(t, cfg.ActiveContext)
+}
+
+func TestContextsCommand_ErrorSwitchNotFound(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	cfg := setupConfig(t)
+	buf := &bytes.Buffer{}
+
+	ctxCmd := cmd.NewContextsCmd(s, cfg, buf)
+	ctxCmd.SetArgs([]string{"nonexistent"})
+	err := ctxCmd.Execute()
+
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), `context "nonexistent" not found`)
+}
+
 // ── Contexts command errors ──────────────────────────────────────────────────
 
 func TestContextsCommand_ErrorDBFailure(t *testing.T) {
 	s := testutil.NewTestDB(t)
 	s.Close()
 
+	cfg := setupConfig(t)
 	buf := &bytes.Buffer{}
-	ctxCmd := cmd.NewContextsCmd(s, buf)
+	ctxCmd := cmd.NewContextsCmd(s, cfg, buf)
 	ctxCmd.SetArgs([]string{})
 	err := ctxCmd.Execute()
 

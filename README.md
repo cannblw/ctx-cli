@@ -49,6 +49,10 @@ ctx switch fix-auth   # or: ctx s fix-auth
 # `ctx contexts <name>` also switches
 ctx contexts fix-auth
 
+# Rename a context
+ctx rename fix-auth fix-auth-bug
+# or: ctx rn fix-auth fix-auth-bug
+
 # Add an item to the active context
 ctx add https://github.com/org/repo/pull/42
 ```

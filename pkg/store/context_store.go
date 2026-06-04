@@ -34,6 +34,29 @@ func (s *Store) ListContexts(ctx context.Context) ([]models.Context, error) {
 	return contexts, err
 }
 
+func (s *Store) RenameContext(ctx context.Context, oldName, newName string) (*models.Context, error) {
+	_, err := s.GetContext(ctx, newName)
+	if err == nil {
+		return nil, fmt.Errorf("context %q already exists", newName)
+	}
+
+	res, err := s.db.NewUpdate().
+		Model((*models.Context)(nil)).
+		Set("name = ?", newName).
+		Set("updated_at = datetime('now')").
+		Where("name = ?", oldName).
+		Exec(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("could not rename context: %w", err)
+	}
+	rows, _ := res.RowsAffected()
+	if rows == 0 {
+		return nil, fmt.Errorf("context %q not found", oldName)
+	}
+
+	return s.GetContext(ctx, newName)
+}
+
 func (s *Store) DeleteContext(ctx context.Context, name string) error {
 	_, err := s.db.NewDelete().
 		Model((*models.Context)(nil)).

@@ -105,6 +105,25 @@ func TestSwitchCommand_SuccessReswitchSameContext(t *testing.T) {
 
 // ── Switch command errors ─────────────────────────────────────────────────────
 
+func TestSwitchCommand_ErrorSaveConfigFails(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	ctx := context.Background()
+	_, err := s.CreateContext(ctx, "fix-auth", "")
+	require.NoError(t, err)
+
+	cfg := setupConfig(t)
+	buf := &bytes.Buffer{}
+
+	require.NoError(t, os.RemoveAll(config.Dir()))
+
+	switchCmd := cmd.NewSwitchCmd(s, cfg, buf)
+	switchCmd.SetArgs([]string{"fix-auth"})
+	err = switchCmd.Execute()
+
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "could not save config")
+}
+
 func TestSwitchCommand_ErrorNotFound(t *testing.T) {
 	s := testutil.NewTestDB(t)
 	cfg := setupConfig(t)

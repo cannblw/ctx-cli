@@ -42,6 +42,24 @@ func TestLoad_SuccessReadsExisting(t *testing.T) {
 	assert.Equal(t, "fix-auth", cfg.ActiveContext)
 }
 
+// ── Load errors ───────────────────────────────────────────────────────────────
+
+func TestLoad_ErrorCorruptedYAML(t *testing.T) {
+	tmp := t.TempDir()
+	t.Setenv("HOME", tmp)
+
+	cfgDir := filepath.Join(tmp, ".ctx")
+	require.NoError(t, os.MkdirAll(cfgDir, 0755))
+	require.NoError(t, os.WriteFile(
+		filepath.Join(cfgDir, "config.yaml"),
+		[]byte("{{{not yaml!!!\n"),
+		0644,
+	))
+
+	_, err := config.Load()
+	assert.Error(t, err)
+}
+
 // ── Save ──────────────────────────────────────────────────────────────────────
 
 func TestSave_SuccessRoundTrip(t *testing.T) {

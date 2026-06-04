@@ -103,6 +103,23 @@ func TestSwitchCommand_SuccessReswitchSameContext(t *testing.T) {
 	assert.Contains(t, buf.String(), `Switched to context "fix-auth"`)
 }
 
+func TestSwitchCommand_SuccessSwitchToGlobal(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	cfg := setupConfig(t)
+	buf := &bytes.Buffer{}
+
+	switchCmd := cmd.NewSwitchCmd(s, cfg, buf)
+	switchCmd.SetArgs([]string{"global"})
+	require.NoError(t, switchCmd.Execute())
+
+	assert.Contains(t, buf.String(), `Switched to context "global"`)
+	assert.Equal(t, "global", cfg.CurrentContext)
+
+	loaded, err := config.Load()
+	require.NoError(t, err)
+	assert.Equal(t, "global", loaded.CurrentContext)
+}
+
 // ── Switch command errors ─────────────────────────────────────────────────────
 
 func TestSwitchCommand_ErrorSaveConfigFails(t *testing.T) {

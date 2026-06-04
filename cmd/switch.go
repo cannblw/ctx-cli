@@ -33,9 +33,11 @@ func switchContext(s *store.Store, cfg *config.Config, stdout io.Writer, name st
 		return fmt.Errorf("context name is required")
 	}
 
-	_, err := s.GetContext(ctx, name)
-	if err != nil {
-		return fmt.Errorf("context %q not found — create it with: ctx new %s", name, name)
+	if name != "global" {
+		_, err := s.GetContext(ctx, name)
+		if err != nil {
+			return fmt.Errorf("context %q not found — create it with: ctx new %s", name, name)
+		}
 	}
 
 	cfg.CurrentContext = name

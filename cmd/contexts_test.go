@@ -84,6 +84,19 @@ func TestContextsCommand_SuccessSwitchWithName(t *testing.T) {
 	assert.Equal(t, "fix-auth", cfg.CurrentContext)
 }
 
+func TestContextsCommand_SuccessSwitchToGlobal(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	cfg := setupConfig(t)
+	buf := &bytes.Buffer{}
+
+	ctxCmd := cmd.NewContextsCmd(s, cfg, buf)
+	ctxCmd.SetArgs([]string{"global"})
+	require.NoError(t, ctxCmd.Execute())
+
+	assert.Contains(t, buf.String(), `Switched to context "global"`)
+	assert.Equal(t, "global", cfg.CurrentContext)
+}
+
 func TestContextsCommand_ErrorSwitchEmptyName(t *testing.T) {
 	s := testutil.NewTestDB(t)
 	cfg := setupConfig(t)

@@ -138,6 +138,49 @@ func TestCreateContext_ErrorDuplicateName(t *testing.T) {
 	assert.Error(t, err)
 }
 
+// ── Context renaming ─────────────────────────────────────────────────────────
+
+func TestRenameContext_Success(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	ctx := context.Background()
+
+	s.CreateContext(ctx, "old-name", "desc")
+
+	c, err := s.RenameContext(ctx, "old-name", "new-name")
+	require.NoError(t, err)
+	assert.Equal(t, "new-name", c.Name)
+	assert.Equal(t, "desc", c.Description)
+
+	_, err = s.GetContext(ctx, "old-name")
+	assert.Error(t, err)
+
+	got, err := s.GetContext(ctx, "new-name")
+	require.NoError(t, err)
+	assert.Equal(t, c.ID, got.ID)
+}
+
+// ── Context renaming errors ──────────────────────────────────────────────────
+
+func TestRenameContext_ErrorNewNameExists(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	ctx := context.Background()
+
+	s.CreateContext(ctx, "a", "")
+	s.CreateContext(ctx, "b", "")
+
+	_, err := s.RenameContext(ctx, "a", "b")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "already exists")
+}
+
+func TestRenameContext_ErrorOldNotFound(t *testing.T) {
+	s := testutil.NewTestDB(t)
+
+	_, err := s.RenameContext(context.Background(), "nope", "yep")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "database update matched no rows")
+}
+
 // ── Context retrieval errors ─────────────────────────────────────────────────
 
 func TestGetContext_ErrorNotFound(t *testing.T) {

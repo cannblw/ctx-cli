@@ -17,9 +17,7 @@ func NewSwitchCmd(s *store.Store, cfg *config.Config, stdout io.Writer) *cobra.C
 		Aliases: []string{"s"},
 		Short:   "Set the active context",
 		Long: `Set the active context (workstream). Subsequent commands like 'ctx add'
-and 'ctx ls' will operate on this context by default.
-
-Use an empty name ("") to clear the active context.`,
+and 'ctx ls' will operate on this context by default.`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return switchContext(s, cfg, stdout, args[0])
@@ -32,12 +30,7 @@ func switchContext(s *store.Store, cfg *config.Config, stdout io.Writer, name st
 	ctx := context.Background()
 
 	if name == "" {
-		cfg.ActiveContext = ""
-		if err := cfg.Save(); err != nil {
-			return err
-		}
-		fmt.Fprintln(stdout, "Cleared active context")
-		return nil
+		return fmt.Errorf("context name is required")
 	}
 
 	_, err := s.GetContext(ctx, name)

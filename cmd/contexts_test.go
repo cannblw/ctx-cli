@@ -84,19 +84,17 @@ func TestContextsCommand_SuccessSwitchWithName(t *testing.T) {
 	assert.Equal(t, "fix-auth", cfg.ActiveContext)
 }
 
-func TestContextsCommand_SuccessSwitchClearWithName(t *testing.T) {
+func TestContextsCommand_ErrorSwitchEmptyName(t *testing.T) {
 	s := testutil.NewTestDB(t)
 	cfg := setupConfig(t)
-	cfg.ActiveContext = "fix-auth"
-	require.NoError(t, cfg.Save())
-
 	buf := &bytes.Buffer{}
+
 	ctxCmd := cmd.NewContextsCmd(s, cfg, buf)
 	ctxCmd.SetArgs([]string{""})
-	require.NoError(t, ctxCmd.Execute())
+	err := ctxCmd.Execute()
 
-	assert.Contains(t, buf.String(), "Cleared active context")
-	assert.Empty(t, cfg.ActiveContext)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "context name is required")
 }
 
 func TestContextsCommand_ErrorSwitchNotFound(t *testing.T) {

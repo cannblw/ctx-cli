@@ -37,7 +37,7 @@ func (s *Store) ListContexts(ctx context.Context) ([]models.Context, error) {
 func (s *Store) RenameContext(ctx context.Context, oldName, newName string) (*models.Context, error) {
 	_, err := s.GetContext(ctx, newName)
 	if err == nil {
-		return nil, fmt.Errorf("context %q already exists", newName)
+		return nil, fmt.Errorf("could not rename context: %q already exists", newName)
 	}
 
 	res, err := s.db.NewUpdate().
@@ -51,7 +51,7 @@ func (s *Store) RenameContext(ctx context.Context, oldName, newName string) (*mo
 	}
 	rows, _ := res.RowsAffected()
 	if rows == 0 {
-		return nil, fmt.Errorf("context %q not found", oldName)
+		return nil, fmt.Errorf("could not rename context %q: not found", oldName)
 	}
 
 	return s.GetContext(ctx, newName)

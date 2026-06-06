@@ -233,7 +233,7 @@ func TestCreateItem_Success(t *testing.T) {
 	c, err := s.CreateContext(ctx, "my-ctx", "")
 	require.NoError(t, err)
 
-	todo, err := s.GetState(ctx, "todo")
+	todo, err := s.GetState(ctx, config.DefaultItemState)
 	require.NoError(t, err)
 
 	item := &models.Item{
@@ -253,7 +253,7 @@ func TestCreateItem_SuccessGlobal(t *testing.T) {
 	s := testutil.NewTestDB(t)
 	ctx := context.Background()
 
-	todo, err := s.GetState(ctx, "todo")
+	todo, err := s.GetState(ctx, config.DefaultItemState)
 	require.NoError(t, err)
 
 	item := &models.Item{
@@ -276,7 +276,7 @@ func TestCreateItem_ErrorDuplicateSlug(t *testing.T) {
 	c, err := s.CreateContext(ctx, "my-ctx", "")
 	require.NoError(t, err)
 
-	todo, err := s.GetState(ctx, "todo")
+	todo, err := s.GetState(ctx, config.DefaultItemState)
 	require.NoError(t, err)
 
 	item := &models.Item{
@@ -306,9 +306,9 @@ func TestGetState_SuccessTodo(t *testing.T) {
 	s := testutil.NewTestDB(t)
 	ctx := context.Background()
 
-	st, err := s.GetState(ctx, "todo")
+	st, err := s.GetState(ctx, config.DefaultItemState)
 	require.NoError(t, err)
-	assert.Equal(t, "todo", st.Name)
+	assert.Equal(t, config.DefaultItemState, st.Name)
 	assert.Equal(t, 0, st.Position)
 }
 
@@ -340,7 +340,7 @@ func TestGetItem_Success(t *testing.T) {
 	c, err := s.CreateContext(ctx, "my-ctx", "")
 	require.NoError(t, err)
 
-	todo, err := s.GetState(ctx, "todo")
+	todo, err := s.GetState(ctx, config.DefaultItemState)
 	require.NoError(t, err)
 
 	item := &models.Item{

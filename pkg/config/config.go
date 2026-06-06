@@ -14,7 +14,10 @@ type Config struct {
 	v              *viper.Viper
 }
 
-const GlobalContextName = "global"
+const (
+	GlobalContextName = "global"
+	DefaultItemState  = "todo"
+)
 
 func Dir() string {
 	home, _ := os.UserHomeDir()
@@ -36,7 +39,7 @@ func Load() (*Config, error) {
 
 	if _, err := os.Stat(Path()); os.IsNotExist(err) {
 		v.Set("current_context", GlobalContextName)
-		v.Set("default_state", "todo")
+		v.Set("default_state", DefaultItemState)
 		if err := v.WriteConfigAs(Path()); err != nil {
 			return nil, fmt.Errorf("could not write config: %w", err)
 		}

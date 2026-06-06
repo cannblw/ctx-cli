@@ -51,7 +51,7 @@ func TestMigration_SuccessCreatesDefaultStates(t *testing.T) {
 	err := db.NewSelect().Model(&states).OrderExpr("position ASC").Scan(context.Background())
 	require.NoError(t, err)
 	require.Len(t, states, 4)
-	assert.Equal(t, "todo", states[0].Name)
+	assert.Equal(t, config.DefaultItemState, states[0].Name)
 	assert.Equal(t, 0, states[0].Position)
 	assert.False(t, states[0].Orphaned)
 	assert.Equal(t, "in-progress", states[1].Name)
@@ -97,7 +97,7 @@ func TestMigration_SuccessCreatesItemsTable(t *testing.T) {
 	require.NoError(t, err)
 
 	state := &models.State{}
-	err = db.NewSelect().Model(state).Where("name = ?", "todo").Scan(context.Background())
+	err = db.NewSelect().Model(state).Where("name = ?", config.DefaultItemState).Scan(context.Background())
 	require.NoError(t, err)
 
 	item := &models.Item{

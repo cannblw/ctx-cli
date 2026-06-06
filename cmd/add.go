@@ -130,7 +130,7 @@ func stateName(cfg *config.Config) string {
 	if cfg.DefaultState != "" {
 		return cfg.DefaultState
 	}
-	return "todo"
+	return config.DefaultItemState
 }
 
 func insertItem(s *store.Store, value, itemType string, contextID *int64, stateName string) (*models.Item, error) {

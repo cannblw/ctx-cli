@@ -138,7 +138,7 @@ func TestSwitchCommand_ErrorSaveConfigFails(t *testing.T) {
 	err = switchCmd.Execute()
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "could not save config")
+	assert.Contains(t, err.Error(), "could not write config")
 }
 
 func TestSwitchCommand_ErrorNotFound(t *testing.T) {

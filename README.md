@@ -58,8 +58,25 @@ ctx rm --context old-project
 # or: ctx remove --context old-project
 # Add --force / -f to skip confirmation
 
-# Add an item to the active context
+# Add items to a context
+
+# Switch to a context first
+ctx switch my-project
+
+# Add a link
 ctx add https://github.com/org/repo/pull/42
+
+# Add a link with explicit type
+ctx add https://jira.company.com/PROJ-123 --type ticket
+
+# Add a file
+ctx add ~/notes/todo.md
+
+# Add globally (no context needed)
+ctx add https://example.com --global
+
+# Aliases
+ctx a https://example.com
 ```
 
 ## License

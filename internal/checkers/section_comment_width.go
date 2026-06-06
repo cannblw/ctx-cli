@@ -31,4 +31,3 @@ func checkSectionCommentWidth(pass *analysis.Pass) (interface{}, error) {
 	}
 	return nil, nil
 }
-

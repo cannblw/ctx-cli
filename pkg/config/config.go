@@ -9,11 +9,15 @@ import (
 )
 
 type Config struct {
-	CurrentContext string `mapstructure:"current_context"`
-	v              *viper.Viper
+	CurrentContext   string `mapstructure:"current_context"`
+	DefaultItemState string `mapstructure:"default_state"`
+	v                *viper.Viper
 }
 
-const GlobalContextName = "global"
+const (
+	GlobalContextName = "global"
+	DefaultItemState  = "todo"
+)
 
 func Dir() string {
 	home, _ := os.UserHomeDir()
@@ -35,6 +39,7 @@ func Load() (*Config, error) {
 
 	if _, err := os.Stat(Path()); os.IsNotExist(err) {
 		v.Set("current_context", GlobalContextName)
+		v.Set("default_state", DefaultItemState)
 		if err := v.WriteConfigAs(Path()); err != nil {
 			return nil, fmt.Errorf("could not write config: %w", err)
 		}
@@ -53,8 +58,20 @@ func Load() (*Config, error) {
 
 func (c *Config) Save() error {
 	c.v.Set("current_context", c.CurrentContext)
+	c.v.Set("default_state", c.DefaultItemState)
 	if err := c.v.WriteConfig(); err != nil {
 		return fmt.Errorf("could not write config: %w", err)
 	}
 	return nil
+}
+
+// SetCurrentContext sets the current context and persists the config.
+func (c *Config) SetCurrentContext(name string) error {
+	c.CurrentContext = name
+	return c.Save()
+}
+
+// ContextDir returns the filesystem directory for a context's stored files.
+func ContextDir(name string) string {
+	return filepath.Join(Dir(), "contexts", name)
 }

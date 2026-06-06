@@ -139,6 +139,20 @@ func TestRmCommand_SuccessCancelledEmpty(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestRmCommand_SuccessHelpNoArgs(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	cfg := setupConfig(t)
+
+	buf := &bytes.Buffer{}
+	stdin := strings.NewReader("")
+
+	rmCmd := cmd.NewRmCmd(s, cfg, stdin, buf)
+	rmCmd.SetArgs([]string{})
+	require.NoError(t, rmCmd.Execute())
+
+	assert.Contains(t, buf.String(), "Delete a context and all its items")
+}
+
 // ── rm command errors ────────────────────────────────────────────────────────
 
 func TestRmCommand_ErrorNotFound(t *testing.T) {
@@ -153,19 +167,5 @@ func TestRmCommand_ErrorNotFound(t *testing.T) {
 	err := rmCmd.Execute()
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), `context "nope" not found`)
-}
-
-func TestRmCommand_SuccessHelpNoArgs(t *testing.T) {
-	s := testutil.NewTestDB(t)
-	cfg := setupConfig(t)
-
-	buf := &bytes.Buffer{}
-	stdin := strings.NewReader("")
-
-	rmCmd := cmd.NewRmCmd(s, cfg, stdin, buf)
-	rmCmd.SetArgs([]string{})
-	require.NoError(t, rmCmd.Execute())
-
-	assert.Contains(t, buf.String(), "Delete a context and all its items")
+	assert.Contains(t, err.Error(), `could not find context "nope"`)
 }

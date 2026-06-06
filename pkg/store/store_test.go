@@ -142,7 +142,7 @@ func TestDeleteContext_ErrorNotFound(t *testing.T) {
 
 	err := s.DeleteContext(context.Background(), "nope")
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "not found")
+	assert.Contains(t, err.Error(), "could not find")
 }
 
 // ── Context creation errors ──────────────────────────────────────────────────

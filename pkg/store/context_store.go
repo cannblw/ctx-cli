@@ -60,7 +60,7 @@ func (s *Store) RenameContext(ctx context.Context, oldName, newName string) (*mo
 func (s *Store) DeleteContext(ctx context.Context, name string) error {
 	_, err := s.GetContext(ctx, name)
 	if err != nil {
-		return fmt.Errorf("context %q not found", name)
+		return fmt.Errorf("could not find context %q", name)
 	}
 
 	_, err = s.db.NewDelete().

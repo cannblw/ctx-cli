@@ -55,7 +55,7 @@ Examples:
 func deleteContext(s *store.Store, cfg *config.Config, name string, force bool, stdin io.Reader, stdout io.Writer) error {
 	_, err := s.GetContext(context.Background(), name)
 	if err != nil {
-		return fmt.Errorf("context %q not found", name)
+		return fmt.Errorf("could not find context %q", name)
 	}
 
 	if !force {
@@ -76,7 +76,7 @@ func deleteContext(s *store.Store, cfg *config.Config, name string, force bool, 
 	if cfg.CurrentContext == name {
 		cfg.CurrentContext = ""
 		if err := cfg.Save(); err != nil {
-			return fmt.Errorf("context deleted but could not update config: %w", err)
+			return fmt.Errorf("could not save config after deleting context: %w", err)
 		}
 		fmt.Fprintln(stdout, "(active context cleared)")
 	}

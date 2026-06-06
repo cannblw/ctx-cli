@@ -98,17 +98,14 @@ func DetectType(value string) (string, error) {
 	if strings.HasPrefix(value, "http://") || strings.HasPrefix(value, "https://") {
 		return "link", nil
 	}
-	if _, err := os.Stat(value); err == nil {
-		return "file", nil
-	}
+	path := value
 	if strings.HasPrefix(value, "~/") {
-		expanded, err := os.UserHomeDir()
-		if err == nil {
-			path := expanded + value[1:]
-			if _, err := os.Stat(path); err == nil {
-				return "file", nil
-			}
+		if home, err := os.UserHomeDir(); err == nil {
+			path = home + value[1:]
 		}
+	}
+	if _, err := os.Stat(path); err == nil {
+		return "file", nil
 	}
 	return "", fmt.Errorf("could not detect type for %q, use --type to specify one of "+validTypesStr, value)
 }

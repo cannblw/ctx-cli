@@ -132,10 +132,7 @@ func resolveContextID(s *store.Store, cfg *config.Config, addGlobal bool) (*int6
 		return nil, nil
 	}
 
-	currentCtx := cfg.CurrentContext
-	if currentCtx == "" {
-		currentCtx = config.GlobalContextName
-	}
+	currentCtx := cfg.CurrentContextName()
 	c, err := s.GetContext(context.Background(), currentCtx)
 	if err != nil {
 		return nil, fmt.Errorf("current context %q not found", currentCtx)
@@ -147,15 +144,11 @@ func resolveContextName(cfg *config.Config, addGlobal bool) string {
 	if addGlobal {
 		return config.GlobalContextName
 	}
-	currentCtx := cfg.CurrentContext
-	if currentCtx == "" {
-		currentCtx = config.GlobalContextName
-	}
-	return currentCtx
+	return cfg.CurrentContextName()
 }
 
 func copyFileToCtxDir(src, ctxName string) (string, error) {
-	destDir := filepath.Join(config.Dir(), "contexts", ctxName)
+	destDir := config.ContextDir(ctxName)
 	if err := os.MkdirAll(destDir, 0755); err != nil {
 		return "", fmt.Errorf("could not create context dir: %w", err)
 	}

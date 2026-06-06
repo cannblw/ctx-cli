@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -75,12 +74,10 @@ func deleteContext(s *store.Store, cfg *config.Config, name string, force bool, 
 		return err
 	}
 
-	ctxDir := filepath.Join(config.Dir(), "contexts", name)
-	_ = os.RemoveAll(ctxDir)
+	_ = os.RemoveAll(config.ContextDir(name))
 
 	if cfg.CurrentContext == name {
-		cfg.CurrentContext = config.GlobalContextName
-		if err := cfg.Save(); err != nil {
+		if err := cfg.SetCurrentContext(config.GlobalContextName); err != nil {
 			return fmt.Errorf("could not save config after deleting context: %w", err)
 		}
 		fmt.Fprintf(stdout, "(current context is now %q)\n", config.GlobalContextName)

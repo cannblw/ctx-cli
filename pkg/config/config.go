@@ -64,3 +64,22 @@ func (c *Config) Save() error {
 	}
 	return nil
 }
+
+// SetCurrentContext sets the current context and persists the config.
+func (c *Config) SetCurrentContext(name string) error {
+	c.CurrentContext = name
+	return c.Save()
+}
+
+// CurrentContextName returns the current context, falling back to GlobalContextName if unset.
+func (c *Config) CurrentContextName() string {
+	if c.CurrentContext == "" {
+		return GlobalContextName
+	}
+	return c.CurrentContext
+}
+
+// ContextDir returns the filesystem directory for a context's stored files.
+func ContextDir(name string) string {
+	return filepath.Join(Dir(), "contexts", name)
+}

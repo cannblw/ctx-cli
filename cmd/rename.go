@@ -40,9 +40,8 @@ Examples:
 			}
 
 			if cfg.CurrentContext == oldName {
-				cfg.CurrentContext = newName
-				if err := cfg.Save(); err != nil {
-					return fmt.Errorf("rename succeeded but could not update active context: %w", err)
+				if err := cfg.SetCurrentContext(newName); err != nil {
+					return fmt.Errorf("rename succeeded but could not update current context: %w", err)
 				}
 			}
 

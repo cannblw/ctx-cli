@@ -38,9 +38,8 @@ func switchContext(s *store.Store, cfg *config.Config, stdout io.Writer, name st
 		return fmt.Errorf("context %q not found — create it with: ctx new %s", name, name)
 	}
 
-	cfg.CurrentContext = name
-	if err := cfg.Save(); err != nil {
-		return fmt.Errorf("could not save config: %w", err)
+	if err := cfg.SetCurrentContext(name); err != nil {
+		return err
 	}
 
 	fmt.Fprintf(stdout, "Switched to context %q\n", name)

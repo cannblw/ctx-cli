@@ -156,6 +156,7 @@ func TestCreateContext_ErrorDuplicateName(t *testing.T) {
 
 	_, err = s.CreateContext(ctx, "fix-auth", "")
 	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "already exists")
 }
 
 // ── Context renaming ─────────────────────────────────────────────────────────
@@ -297,7 +298,7 @@ func TestCreateItem_ErrorDuplicateSlug(t *testing.T) {
 	}
 	err = s.CreateItem(ctx, dup)
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "could not insert item")
+	assert.Contains(t, err.Error(), "already exists")
 }
 
 // ── State retrieval ──────────────────────────────────────────────────────────

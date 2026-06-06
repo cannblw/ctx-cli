@@ -10,7 +10,12 @@ import (
 )
 
 func (s *Store) CreateItem(ctx context.Context, item *models.Item) error {
-	_, err := s.db.NewInsert().Model(item).Exec(ctx)
+	_, err := s.GetItem(ctx, item.Slug)
+	if err == nil {
+		return fmt.Errorf("item %q already exists", item.Slug)
+	}
+
+	_, err = s.db.NewInsert().Model(item).Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("could not insert item: %w", err)
 	}

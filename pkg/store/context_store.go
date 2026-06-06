@@ -8,11 +8,16 @@ import (
 )
 
 func (s *Store) CreateContext(ctx context.Context, name, description string) (*models.Context, error) {
+	_, err := s.GetContext(ctx, name)
+	if err == nil {
+		return nil, fmt.Errorf("context %q already exists", name)
+	}
+
 	c := &models.Context{
 		Name:        name,
 		Description: description,
 	}
-	_, err := s.db.NewInsert().Model(c).Exec(ctx)
+	_, err = s.db.NewInsert().Model(c).Exec(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("could not insert context: %w", err)
 	}

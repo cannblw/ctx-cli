@@ -145,7 +145,7 @@ func insertItem(s *store.Store, value, itemType string, contextID *int64, stateN
 		return nil, fmt.Errorf("default state %q not found: %w", stateName, err)
 	}
 
-	itemSlug, err := nextSlug(s, slug.FromValue(value))
+	itemSlug, err := resolveSlug(s, value)
 	if err != nil {
 		return nil, err
 	}
@@ -176,7 +176,8 @@ func printAdded(stdout io.Writer, item *models.Item, value, itemType string, aut
 	fmt.Fprintf(stdout, "Added [%s] %s (%s) %s\n", item.Slug, value, typeLabel, scope)
 }
 
-func nextSlug(s *store.Store, base string) (string, error) {
+func resolveSlug(s *store.Store, value string) (string, error) {
+	base := slug.FromValue(value)
 	count, err := s.CountSlugsByPrefix(context.Background(), base)
 	if err != nil {
 		return "", err

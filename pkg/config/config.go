@@ -9,9 +9,9 @@ import (
 )
 
 type Config struct {
-	CurrentContext string `mapstructure:"current_context"`
-	DefaultState   string `mapstructure:"default_state"`
-	v              *viper.Viper
+	CurrentContext   string `mapstructure:"current_context"`
+	DefaultItemState string `mapstructure:"default_state"`
+	v                *viper.Viper
 }
 
 const (
@@ -58,7 +58,7 @@ func Load() (*Config, error) {
 
 func (c *Config) Save() error {
 	c.v.Set("current_context", c.CurrentContext)
-	c.v.Set("default_state", c.DefaultState)
+	c.v.Set("default_state", c.DefaultItemState)
 	if err := c.v.WriteConfig(); err != nil {
 		return fmt.Errorf("could not write config: %w", err)
 	}

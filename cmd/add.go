@@ -154,8 +154,8 @@ func copyFileToCtxDir(src, ctxName string) (string, error) {
 }
 
 func stateName(cfg *config.Config) string {
-	if cfg.DefaultState != "" {
-		return cfg.DefaultState
+	if cfg.DefaultItemState != "" {
+		return cfg.DefaultItemState
 	}
 	return config.DefaultItemState
 }

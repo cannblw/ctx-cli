@@ -20,7 +20,7 @@ func TestLoad_SuccessCreatesDefault(t *testing.T) {
 	cfg, err := config.Load()
 	require.NoError(t, err)
 	assert.Equal(t, config.GlobalContextName, cfg.CurrentContext)
-	assert.Equal(t, config.DefaultItemState, cfg.DefaultState)
+	assert.Equal(t, config.DefaultItemState, cfg.DefaultItemState)
 
 	_, err = os.Stat(filepath.Join(tmp, ".ctx", "config.yaml"))
 	require.NoError(t, err)
@@ -140,10 +140,10 @@ func TestDefaultState_SuccessRoundTrip(t *testing.T) {
 	cfg, err := config.Load()
 	require.NoError(t, err)
 
-	cfg.DefaultState = "done"
+	cfg.DefaultItemState = "done"
 	require.NoError(t, cfg.Save())
 
 	loaded, err := config.Load()
 	require.NoError(t, err)
-	assert.Equal(t, "done", loaded.DefaultState)
+	assert.Equal(t, "done", loaded.DefaultItemState)
 }

@@ -34,6 +34,8 @@ Prefer composite literals over `new()`: `&bytes.Buffer{}` not `new(bytes.Buffer)
 
 Use `New<Type>()` for constructors: `NewStore()`, `NewStoreFromDB()`. Not bare `New()`.
 
+For sets (key-existence checks only), use `map[K]struct{}` with the comma-ok idiom, never `map[K]bool`.
+
 ## Nomenclature
 
 **Always** use "current context", never "active context". The config field is `current_context`, the Go field is `CurrentContext`. User-facing messages, comments, and docs must say "current", not "active".

@@ -15,11 +15,11 @@ import (
 	"github.com/cannblw/ctx-cli/pkg/store"
 )
 
-var validTypes = map[string]bool{
-	"link":   true,
-	"pr":     true,
-	"ticket": true,
-	"file":   true,
+var validTypes = map[string]struct{}{
+	"link":   {},
+	"pr":     {},
+	"ticket": {},
+	"file":   {},
 }
 
 // NewAddCmd creates the `ctx add` command.
@@ -54,7 +54,7 @@ Examples:
 				itemType = DetectType(value)
 			}
 
-			if !validTypes[itemType] {
+			if _, ok := validTypes[itemType]; !ok {
 				return fmt.Errorf("invalid type %q: must be one of link, pr, ticket, file", itemType)
 			}
 

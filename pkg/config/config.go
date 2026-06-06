@@ -10,6 +10,7 @@ import (
 
 type Config struct {
 	CurrentContext string `mapstructure:"current_context"`
+	DefaultState   string `mapstructure:"default_state"`
 	v              *viper.Viper
 }
 
@@ -35,6 +36,7 @@ func Load() (*Config, error) {
 
 	if _, err := os.Stat(Path()); os.IsNotExist(err) {
 		v.Set("current_context", GlobalContextName)
+		v.Set("default_state", "todo")
 		if err := v.WriteConfigAs(Path()); err != nil {
 			return nil, fmt.Errorf("could not write config: %w", err)
 		}
@@ -53,6 +55,7 @@ func Load() (*Config, error) {
 
 func (c *Config) Save() error {
 	c.v.Set("current_context", c.CurrentContext)
+	c.v.Set("default_state", c.DefaultState)
 	if err := c.v.WriteConfig(); err != nil {
 		return fmt.Errorf("could not write config: %w", err)
 	}

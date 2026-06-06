@@ -60,7 +60,7 @@ Examples:
 				return err
 			}
 
-			item, err := insertItem(s, value, itemType, contextID)
+			item, err := insertItem(s, value, itemType, contextID, stateName(cfg))
 			if err != nil {
 				return err
 			}
@@ -126,10 +126,17 @@ func resolveContextID(s *store.Store, cfg *config.Config, addGlobal bool) (*int6
 	return &c.ID, nil
 }
 
-func insertItem(s *store.Store, value, itemType string, contextID *int64) (*models.Item, error) {
-	todoState, err := s.GetState(context.Background(), "todo")
+func stateName(cfg *config.Config) string {
+	if cfg.DefaultState != "" {
+		return cfg.DefaultState
+	}
+	return "todo"
+}
+
+func insertItem(s *store.Store, value, itemType string, contextID *int64, stateName string) (*models.Item, error) {
+	state, err := s.GetState(context.Background(), stateName)
 	if err != nil {
-		return nil, fmt.Errorf("default 'todo' state not found: %w", err)
+		return nil, fmt.Errorf("default state %q not found: %w", stateName, err)
 	}
 
 	itemSlug, err := nextSlug(s, slug.FromValue(value))
@@ -142,7 +149,7 @@ func insertItem(s *store.Store, value, itemType string, contextID *int64) (*mode
 		ContextID: contextID,
 		Type:      itemType,
 		Value:     value,
-		StateID:   &todoState.ID,
+		StateID:   &state.ID,
 	}
 
 	if err := s.CreateItem(context.Background(), item); err != nil {

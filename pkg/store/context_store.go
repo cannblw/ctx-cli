@@ -58,9 +58,17 @@ func (s *Store) RenameContext(ctx context.Context, oldName, newName string) (*mo
 }
 
 func (s *Store) DeleteContext(ctx context.Context, name string) error {
-	_, err := s.db.NewDelete().
+	_, err := s.GetContext(ctx, name)
+	if err != nil {
+		return fmt.Errorf("context %q not found", name)
+	}
+
+	_, err = s.db.NewDelete().
 		Model((*models.Context)(nil)).
 		Where("name = ?", name).
 		Exec(ctx)
-	return err
+	if err != nil {
+		return fmt.Errorf("could not delete context %q: %w", name, err)
+	}
+	return nil
 }

@@ -5,6 +5,8 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -72,6 +74,9 @@ func deleteContext(s *store.Store, cfg *config.Config, name string, force bool, 
 	if err := s.DeleteContext(context.Background(), name); err != nil {
 		return err
 	}
+
+	ctxDir := filepath.Join(config.Dir(), "contexts", name)
+	_ = os.RemoveAll(ctxDir)
 
 	if cfg.CurrentContext == name {
 		cfg.CurrentContext = config.GlobalContextName

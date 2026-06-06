@@ -5,13 +5,13 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/cannblw/ctx-cli/cmd"
-	"github.com/cannblw/ctx-cli/pkg/slug"
 	"github.com/cannblw/ctx-cli/pkg/testutil"
 )
 
@@ -124,7 +124,7 @@ func TestAddCommand_SuccessFileCopyToContextDir(t *testing.T) {
 	addCmd.SetArgs([]string{f})
 	require.NoError(t, addCmd.Execute())
 
-	itemSlug := slug.FromValue(f)
+	itemSlug := extractSlug(buf.String())
 	item, err := s.GetItem(ctx, itemSlug)
 	require.NoError(t, err)
 	assert.Contains(t, item.Value, ".ctx")
@@ -152,7 +152,7 @@ func TestAddCommand_SuccessFileCopyGlobal(t *testing.T) {
 	addCmd.SetArgs([]string{f, "--global"})
 	require.NoError(t, addCmd.Execute())
 
-	itemSlug := slug.FromValue(f)
+	itemSlug := extractSlug(buf.String())
 	item, err := s.GetItem(ctx, itemSlug)
 	require.NoError(t, err)
 	assert.Nil(t, item.ContextID)
@@ -182,7 +182,7 @@ func TestAddCommand_SuccessExplicitFileType(t *testing.T) {
 	assert.Contains(t, output, "(file)")
 	assert.NotContains(t, output, "auto-detected")
 
-	itemSlug := slug.FromValue(f)
+	itemSlug := extractSlug(output)
 	item, err := s.GetItem(ctx, itemSlug)
 	require.NoError(t, err)
 	assert.Contains(t, item.Value, ".ctx")
@@ -323,4 +323,13 @@ func TestDetectType_ErrorPlainString(t *testing.T) {
 	_, err := cmd.DetectType("just-some-text")
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "could not detect type")
+}
+
+func extractSlug(output string) string {
+	start := strings.Index(output, "Added [") + len("Added [")
+	end := strings.Index(output[start:], "]")
+	if start < 0 || end < 0 {
+		return ""
+	}
+	return output[start : start+end]
 }

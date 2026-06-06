@@ -30,7 +30,7 @@ func readConfigFile(t *testing.T) string {
 	return string(data)
 }
 
-// ── Switch command successes ──────────────────────────────────────────────────
+// ── Switch command successes ─────────────────────────────────────────────────
 
 func TestSwitchCommand_SuccessSwitchToContext(t *testing.T) {
 	s := testutil.NewTestDB(t)
@@ -120,7 +120,7 @@ func TestSwitchCommand_SuccessSwitchToGlobal(t *testing.T) {
 	assert.Equal(t, config.GlobalContextName, loaded.CurrentContext)
 }
 
-// ── Switch command errors ─────────────────────────────────────────────────────
+// ── Switch command errors ────────────────────────────────────────────────────
 
 func TestSwitchCommand_ErrorSaveConfigFails(t *testing.T) {
 	s := testutil.NewTestDB(t)
@@ -167,7 +167,7 @@ func TestSwitchCommand_ErrorNoArgs(t *testing.T) {
 	assert.Contains(t, err.Error(), "accepts 1 arg")
 }
 
-// ── Config persistence ────────────────────────────────────────────────────────
+// ── Config persistence ───────────────────────────────────────────────────────
 
 func TestSwitchCommand_SuccessPersistedToFile(t *testing.T) {
 	s := testutil.NewTestDB(t)

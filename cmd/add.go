@@ -33,7 +33,7 @@ func buildTypeMap() map[string]struct{} {
 // NewAddCmd creates the `ctx add` command.
 func NewAddCmd(s *store.Store, cfg *config.Config, stdout io.Writer) *cobra.Command {
 	var (
-		addType  string
+		itemType string
 		isGlobal bool
 	)
 
@@ -57,7 +57,7 @@ Examples:
 				return fmt.Errorf("value cannot be empty")
 			}
 
-			itemType, autoDetected, err := resolveItemType(value, addType)
+			itemType, autoDetected, err := resolveItemType(value, itemType)
 			if err != nil {
 				return err
 			}
@@ -87,7 +87,7 @@ Examples:
 		},
 	}
 
-	cmd.Flags().StringVarP(&addType, "type", "t", "", "item type: "+validTypesStr)
+	cmd.Flags().StringVarP(&itemType, "type", "t", "", "item type: "+validTypesStr)
 	cmd.Flags().BoolVarP(&isGlobal, "global", "g", false, "add item globally (no context)")
 	return cmd
 }
@@ -112,12 +112,12 @@ func DetectType(value string) (string, error) {
 	return "", fmt.Errorf("could not detect type for %q, use --type to specify one of "+validTypesStr, value)
 }
 
-func resolveItemType(value, addType string) (string, bool, error) {
-	if addType != "" {
-		if _, ok := validTypes[addType]; !ok {
-			return "", false, fmt.Errorf("invalid type %q: must be one of "+validTypesStr, addType)
+func resolveItemType(value, itemType string) (string, bool, error) {
+	if itemType != "" {
+		if _, ok := validTypes[itemType]; !ok {
+			return "", false, fmt.Errorf("invalid type %q: must be one of "+validTypesStr, itemType)
 		}
-		return addType, false, nil
+		return itemType, false, nil
 	}
 
 	itemType, err := DetectType(value)

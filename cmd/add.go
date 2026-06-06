@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -76,7 +77,11 @@ Examples:
 				return fmt.Errorf("default 'todo' state not found: %w", err)
 			}
 
-			itemSlug := slug.FromValue(value)
+			itemSlug, err := nextSlug(s, slug.FromValue(value))
+			if err != nil {
+				return err
+			}
+
 			item := &models.Item{
 				Slug:      itemSlug,
 				ContextID: contextID,
@@ -85,7 +90,7 @@ Examples:
 				StateID:   &todoState.ID,
 			}
 
-			if err := createItemWithRetry(s, item); err != nil {
+			if err := s.CreateItem(context.Background(), item); err != nil {
 				return err
 			}
 
@@ -123,17 +128,24 @@ func DetectType(value string) string {
 	return "link"
 }
 
-func createItemWithRetry(s *store.Store, item *models.Item) error {
-	baseSlug := item.Slug
-	for i := 0; i < 10; i++ {
-		err := s.CreateItem(context.Background(), item)
-		if err == nil {
-			return nil
-		}
-		if !strings.Contains(err.Error(), "UNIQUE constraint") {
-			return err
-		}
-		item.Slug = fmt.Sprintf("%s-%d", baseSlug, i+2)
+func nextSlug(s *store.Store, base string) (string, error) {
+	existing, err := s.FindSlugsByPrefix(context.Background(), base)
+	if err != nil {
+		return "", err
 	}
-	return fmt.Errorf("could not create item: slug collision after 10 retries for %q", baseSlug)
+	if len(existing) == 0 {
+		return base, nil
+	}
+
+	maxSuffix := 1
+	for _, slug := range existing {
+		if slug == base {
+			continue
+		}
+		rest := strings.TrimPrefix(slug, base+"-")
+		if n, err := strconv.Atoi(rest); err == nil && n > maxSuffix {
+			maxSuffix = n
+		}
+	}
+	return fmt.Sprintf("%s-%d", base, maxSuffix+1), nil
 }

@@ -50,65 +50,22 @@ Examples:
 				return fmt.Errorf("value cannot be empty")
 			}
 
-			autoDetected := false
-			itemType := addType
-			if itemType == "" {
-				var err error
-				itemType, err = DetectType(value)
-				if err != nil {
-					return err
-				}
-				autoDetected = true
-			}
-
-			if _, ok := validTypes[itemType]; !ok {
-				return fmt.Errorf("invalid type %q: must be one of link, pr, ticket, file", itemType)
-			}
-
-			var contextID *int64
-			if !addGlobal {
-				currentCtx := cfg.CurrentContext
-				if currentCtx == "" {
-					currentCtx = config.GlobalContextName
-				}
-				c, err := s.GetContext(context.Background(), currentCtx)
-				if err != nil {
-					return fmt.Errorf("current context %q not found", currentCtx)
-				}
-				contextID = &c.ID
-			}
-
-			todoState, err := s.GetState(context.Background(), "todo")
-			if err != nil {
-				return fmt.Errorf("default 'todo' state not found: %w", err)
-			}
-
-			itemSlug, err := nextSlug(s, slug.FromValue(value))
+			itemType, autoDetected, err := resolveItemType(value, addType)
 			if err != nil {
 				return err
 			}
 
-			item := &models.Item{
-				Slug:      itemSlug,
-				ContextID: contextID,
-				Type:      itemType,
-				Value:     value,
-				StateID:   &todoState.ID,
-			}
-
-			if err := s.CreateItem(context.Background(), item); err != nil {
+			contextID, err := resolveContextID(s, cfg, addGlobal)
+			if err != nil {
 				return err
 			}
 
-			typeLabel := itemType
-			if autoDetected {
-				typeLabel = "auto-detected as " + itemType
+			item, err := insertItem(s, value, itemType, contextID)
+			if err != nil {
+				return err
 			}
-			scope := "globally"
-			if contextID != nil {
-				scope = fmt.Sprintf("in context %q", cfg.CurrentContext)
-			}
-			fmt.Fprintf(stdout, "Added [%s] %s (%s) %s\n", item.Slug, value, typeLabel, scope)
+
+			printAdded(stdout, item, value, itemType, autoDetected, contextID, cfg)
 			return nil
 		},
 	}
@@ -136,6 +93,74 @@ func DetectType(value string) (string, error) {
 		}
 	}
 	return "", fmt.Errorf("could not detect type for %q, use --type to specify one of link, pr, ticket, file", value)
+}
+
+func resolveItemType(value, addType string) (string, bool, error) {
+	if addType != "" {
+		if _, ok := validTypes[addType]; !ok {
+			return "", false, fmt.Errorf("invalid type %q: must be one of link, pr, ticket, file", addType)
+		}
+		return addType, false, nil
+	}
+
+	itemType, err := DetectType(value)
+	if err != nil {
+		return "", false, err
+	}
+	return itemType, true, nil
+}
+
+func resolveContextID(s *store.Store, cfg *config.Config, addGlobal bool) (*int64, error) {
+	if addGlobal {
+		return nil, nil
+	}
+
+	currentCtx := cfg.CurrentContext
+	if currentCtx == "" {
+		currentCtx = config.GlobalContextName
+	}
+	c, err := s.GetContext(context.Background(), currentCtx)
+	if err != nil {
+		return nil, fmt.Errorf("current context %q not found", currentCtx)
+	}
+	return &c.ID, nil
+}
+
+func insertItem(s *store.Store, value, itemType string, contextID *int64) (*models.Item, error) {
+	todoState, err := s.GetState(context.Background(), "todo")
+	if err != nil {
+		return nil, fmt.Errorf("default 'todo' state not found: %w", err)
+	}
+
+	itemSlug, err := nextSlug(s, slug.FromValue(value))
+	if err != nil {
+		return nil, err
+	}
+
+	item := &models.Item{
+		Slug:      itemSlug,
+		ContextID: contextID,
+		Type:      itemType,
+		Value:     value,
+		StateID:   &todoState.ID,
+	}
+
+	if err := s.CreateItem(context.Background(), item); err != nil {
+		return nil, err
+	}
+	return item, nil
+}
+
+func printAdded(stdout io.Writer, item *models.Item, value, itemType string, autoDetected bool, contextID *int64, cfg *config.Config) {
+	typeLabel := itemType
+	if autoDetected {
+		typeLabel = "auto-detected as " + itemType
+	}
+	scope := "globally"
+	if contextID != nil {
+		scope = fmt.Sprintf("in context %q", cfg.CurrentContext)
+	}
+	fmt.Fprintf(stdout, "Added [%s] %s (%s) %s\n", item.Slug, value, typeLabel, scope)
 }
 
 func nextSlug(s *store.Store, base string) (string, error) {

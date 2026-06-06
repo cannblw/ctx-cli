@@ -33,8 +33,8 @@ func buildTypeMap() map[string]struct{} {
 // NewAddCmd creates the `ctx add` command.
 func NewAddCmd(s *store.Store, cfg *config.Config, stdout io.Writer) *cobra.Command {
 	var (
-		addType   string
-		addGlobal bool
+		addType  string
+		isGlobal bool
 	)
 
 	cmd := &cobra.Command{
@@ -62,14 +62,14 @@ Examples:
 				return err
 			}
 
-			contextID, err := resolveContextID(s, cfg, addGlobal)
+			contextID, err := resolveContextID(s, cfg, isGlobal)
 			if err != nil {
 				return err
 			}
 
 			storedValue := value
 			if itemType == "file" {
-				ctxName := cfg.ResolveContextName(addGlobal)
+				ctxName := cfg.ResolveContextName(isGlobal)
 				copied, err := copyFileToCtxDir(value, ctxName)
 				if err != nil {
 					return err
@@ -88,7 +88,7 @@ Examples:
 	}
 
 	cmd.Flags().StringVarP(&addType, "type", "t", "", "item type: "+validTypesStr)
-	cmd.Flags().BoolVarP(&addGlobal, "global", "g", false, "add item globally (no context)")
+	cmd.Flags().BoolVarP(&isGlobal, "global", "g", false, "add item globally (no context)")
 	return cmd
 }
 
@@ -127,8 +127,8 @@ func resolveItemType(value, addType string) (string, bool, error) {
 	return itemType, true, nil
 }
 
-func resolveContextID(s *store.Store, cfg *config.Config, addGlobal bool) (*int64, error) {
-	if addGlobal {
+func resolveContextID(s *store.Store, cfg *config.Config, isGlobal bool) (*int64, error) {
+	if isGlobal {
 		return nil, nil
 	}
 

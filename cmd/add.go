@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -66,7 +67,17 @@ Examples:
 				return err
 			}
 
-			item, err := insertItem(s, value, itemType, contextID, stateName(cfg))
+			storedValue := value
+			if itemType == "file" {
+				ctxName := resolveContextName(cfg, addGlobal)
+				copied, err := copyFileToCtxDir(value, ctxName)
+				if err != nil {
+					return err
+				}
+				storedValue = copied
+			}
+
+			item, err := insertItem(s, storedValue, itemType, contextID, stateName(cfg))
 			if err != nil {
 				return err
 			}
@@ -130,6 +141,42 @@ func resolveContextID(s *store.Store, cfg *config.Config, addGlobal bool) (*int6
 		return nil, fmt.Errorf("current context %q not found", currentCtx)
 	}
 	return &c.ID, nil
+}
+
+func resolveContextName(cfg *config.Config, addGlobal bool) string {
+	if addGlobal {
+		return config.GlobalContextName
+	}
+	currentCtx := cfg.CurrentContext
+	if currentCtx == "" {
+		currentCtx = config.GlobalContextName
+	}
+	return currentCtx
+}
+
+func copyFileToCtxDir(src, ctxName string) (string, error) {
+	destDir := filepath.Join(config.Dir(), "contexts", ctxName)
+	if err := os.MkdirAll(destDir, 0755); err != nil {
+		return "", fmt.Errorf("could not create context dir: %w", err)
+	}
+
+	srcFile, err := os.Open(src)
+	if err != nil {
+		return "", fmt.Errorf("could not open file: %w", err)
+	}
+	defer srcFile.Close()
+
+	dest := filepath.Join(destDir, filepath.Base(src))
+	dstFile, err := os.Create(dest)
+	if err != nil {
+		return "", fmt.Errorf("could not create file: %w", err)
+	}
+	defer dstFile.Close()
+
+	if _, err := io.Copy(dstFile, srcFile); err != nil {
+		return "", fmt.Errorf("could not copy file: %w", err)
+	}
+	return dest, nil
 }
 
 func stateName(cfg *config.Config) string {

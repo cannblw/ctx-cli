@@ -53,6 +53,11 @@ ctx contexts fix-auth
 ctx rename fix-auth fix-auth-bug
 # or: ctx rn fix-auth fix-auth-bug
 
+# Delete a context
+ctx rm --context old-project
+# or: ctx remove --context old-project
+# Add --force / -f to skip confirmation
+
 # Add an item to the active context
 ctx add https://github.com/org/repo/pull/42
 ```

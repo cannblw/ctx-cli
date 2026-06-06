@@ -74,6 +74,7 @@ func deleteContext(s *store.Store, cfg *config.Config, name string, force bool, 
 		return err
 	}
 
+	// Non-fatal: directory may not exist if no files were ever added.
 	_ = os.RemoveAll(config.ContextDir(name))
 
 	if cfg.CurrentContext == name {

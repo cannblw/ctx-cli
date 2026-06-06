@@ -3,6 +3,8 @@ package cmd_test
 import (
 	"bytes"
 	"context"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -169,4 +171,44 @@ func TestRmCommand_ErrorNotFound(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), `could not find context "nope"`)
+}
+
+// ── Context directory removal ────────────────────────────────────────────────
+
+func TestRmCommand_SuccessRemovesContextDir(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	s.CreateContext(context.Background(), "temp", "")
+
+	cfg := setupConfig(t)
+
+	ctxDir := config.ContextDir("temp")
+	require.NoError(t, os.MkdirAll(ctxDir, 0755))
+	dummy := filepath.Join(ctxDir, "notes.md")
+	require.NoError(t, os.WriteFile(dummy, []byte("test"), 0644))
+
+	buf := &bytes.Buffer{}
+	stdin := strings.NewReader("")
+
+	rmCmd := cmd.NewRmCmd(s, cfg, stdin, buf)
+	rmCmd.SetArgs([]string{"--context", "temp", "--force"})
+	require.NoError(t, rmCmd.Execute())
+
+	_, err := os.Stat(dummy)
+	assert.Error(t, err)
+	assert.True(t, os.IsNotExist(err))
+}
+
+func TestRmCommand_SuccessNoContextDirIsFine(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	s.CreateContext(context.Background(), "temp", "")
+
+	cfg := setupConfig(t)
+	buf := &bytes.Buffer{}
+	stdin := strings.NewReader("")
+
+	rmCmd := cmd.NewRmCmd(s, cfg, stdin, buf)
+	rmCmd.SetArgs([]string{"--context", "temp", "--force"})
+	require.NoError(t, rmCmd.Execute())
+
+	assert.Contains(t, buf.String(), `Deleted context "temp"`)
 }

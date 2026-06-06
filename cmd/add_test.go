@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/cannblw/ctx-cli/cmd"
+	"github.com/cannblw/ctx-cli/pkg/slug"
 	"github.com/cannblw/ctx-cli/pkg/testutil"
 )
 
@@ -104,6 +105,105 @@ func TestAddCommand_SuccessFileType(t *testing.T) {
 	require.NoError(t, addCmd.Execute())
 
 	assert.Contains(t, buf.String(), "auto-detected as file")
+}
+
+func TestAddCommand_SuccessFileCopyToContextDir(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	ctx := context.Background()
+	s.CreateContext(ctx, "my-ctx", "")
+
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "notes.md")
+	require.NoError(t, os.WriteFile(f, []byte("hello"), 0644))
+
+	cfg := setupConfig(t)
+	cfg.CurrentContext = "my-ctx"
+	buf := &bytes.Buffer{}
+
+	addCmd := cmd.NewAddCmd(s, cfg, buf)
+	addCmd.SetArgs([]string{f})
+	require.NoError(t, addCmd.Execute())
+
+	itemSlug := slug.FromValue(f)
+	item, err := s.GetItem(ctx, itemSlug)
+	require.NoError(t, err)
+	assert.Contains(t, item.Value, ".ctx")
+	assert.Contains(t, item.Value, "contexts")
+	assert.Contains(t, item.Value, "my-ctx")
+	assert.Contains(t, item.Value, "notes.md")
+
+	copied, err := os.Stat(item.Value)
+	require.NoError(t, err)
+	assert.False(t, copied.IsDir())
+}
+
+func TestAddCommand_SuccessFileCopyGlobal(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	ctx := context.Background()
+
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "notes.md")
+	require.NoError(t, os.WriteFile(f, []byte("hello"), 0644))
+
+	cfg := setupConfig(t)
+	buf := &bytes.Buffer{}
+
+	addCmd := cmd.NewAddCmd(s, cfg, buf)
+	addCmd.SetArgs([]string{f, "--global"})
+	require.NoError(t, addCmd.Execute())
+
+	itemSlug := slug.FromValue(f)
+	item, err := s.GetItem(ctx, itemSlug)
+	require.NoError(t, err)
+	assert.Nil(t, item.ContextID)
+	assert.Contains(t, item.Value, "contexts")
+	assert.Contains(t, item.Value, "global")
+	assert.Contains(t, item.Value, "notes.md")
+}
+
+func TestAddCommand_SuccessExplicitFileType(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	ctx := context.Background()
+	s.CreateContext(ctx, "my-ctx", "")
+
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "notes.md")
+	require.NoError(t, os.WriteFile(f, []byte("hello"), 0644))
+
+	cfg := setupConfig(t)
+	cfg.CurrentContext = "my-ctx"
+	buf := &bytes.Buffer{}
+
+	addCmd := cmd.NewAddCmd(s, cfg, buf)
+	addCmd.SetArgs([]string{f, "--type", "file"})
+	require.NoError(t, addCmd.Execute())
+
+	output := buf.String()
+	assert.Contains(t, output, "(file)")
+	assert.NotContains(t, output, "auto-detected")
+
+	itemSlug := slug.FromValue(f)
+	item, err := s.GetItem(ctx, itemSlug)
+	require.NoError(t, err)
+	assert.Contains(t, item.Value, ".ctx")
+	assert.Contains(t, item.Value, "contexts")
+}
+
+func TestAddCommand_ErrorFileNotFound(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	ctx := context.Background()
+	s.CreateContext(ctx, "my-ctx", "")
+
+	cfg := setupConfig(t)
+	cfg.CurrentContext = "my-ctx"
+	buf := &bytes.Buffer{}
+
+	addCmd := cmd.NewAddCmd(s, cfg, buf)
+	addCmd.SetArgs([]string{"/nonexistent/file.txt", "--type", "file"})
+	err := addCmd.Execute()
+
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "could not open file")
 }
 
 func TestAddCommand_SuccessSlugCollision(t *testing.T) {

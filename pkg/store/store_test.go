@@ -369,3 +369,72 @@ func TestGetItem_ErrorNotFound(t *testing.T) {
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "could not get item")
 }
+
+// ── Slug counting ────────────────────────────────────────────────────────────
+
+func TestCountSlugsByPrefix_SuccessZero(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	ctx := context.Background()
+
+	count, err := s.CountSlugsByPrefix(ctx, "nonexistent")
+	require.NoError(t, err)
+	assert.Equal(t, 0, count)
+}
+
+func TestCountSlugsByPrefix_SuccessExactMatch(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	ctx := context.Background()
+
+	c, _ := s.CreateContext(ctx, "my-ctx", "")
+	item := &models.Item{
+		Slug:      "my-slug",
+		ContextID: &c.ID,
+		Type:      "link",
+		Value:     "https://example.com",
+	}
+	require.NoError(t, s.CreateItem(ctx, item))
+
+	count, err := s.CountSlugsByPrefix(ctx, "my-slug")
+	require.NoError(t, err)
+	assert.Equal(t, 1, count)
+}
+
+func TestCountSlugsByPrefix_SuccessNumericSuffixes(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	ctx := context.Background()
+
+	c, _ := s.CreateContext(ctx, "my-ctx", "")
+
+	for _, slug := range []string{"my-slug", "my-slug-2", "my-slug-3"} {
+		require.NoError(t, s.CreateItem(ctx, &models.Item{
+			Slug:      slug,
+			ContextID: &c.ID,
+			Type:      "link",
+			Value:     "https://example.com",
+		}))
+	}
+
+	count, err := s.CountSlugsByPrefix(ctx, "my-slug")
+	require.NoError(t, err)
+	assert.Equal(t, 3, count)
+}
+
+func TestCountSlugsByPrefix_SuccessExcludesNonNumeric(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	ctx := context.Background()
+
+	c, _ := s.CreateContext(ctx, "my-ctx", "")
+
+	for _, slug := range []string{"my-slug", "my-slug-and-stuff", "my-slug-2"} {
+		require.NoError(t, s.CreateItem(ctx, &models.Item{
+			Slug:      slug,
+			ContextID: &c.ID,
+			Type:      "link",
+			Value:     "https://example.com",
+		}))
+	}
+
+	count, err := s.CountSlugsByPrefix(ctx, "my-slug")
+	require.NoError(t, err)
+	assert.Equal(t, 2, count)
+}

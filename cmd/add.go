@@ -67,17 +67,15 @@ Examples:
 				return err
 			}
 
-			storedValue := value
 			if itemType == "file" {
 				ctxName := cfg.ResolveContextName(isGlobal)
-				copied, err := copyFileToCtxDir(value, ctxName)
+				value, err = copyFileToCtxDir(value, ctxName)
 				if err != nil {
 					return err
 				}
-				storedValue = copied
 			}
 
-			item, err := insertItem(s, storedValue, itemType, contextID, stateName(cfg))
+			item, err := insertItem(s, value, itemType, contextID, stateName(cfg))
 			if err != nil {
 				return err
 			}

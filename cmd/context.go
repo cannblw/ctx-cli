@@ -14,10 +14,9 @@ func ResolveContextID(s *store.Store, cfg *config.Config, isGlobal bool) (*int64
 		return nil, nil
 	}
 
-	currentCtx := cfg.CurrentContextName()
-	c, err := s.GetContext(context.Background(), currentCtx)
+	c, err := s.GetContext(context.Background(), cfg.CurrentContext)
 	if err != nil {
-		return nil, fmt.Errorf("current context %q not found", currentCtx)
+		return nil, fmt.Errorf("current context %q not found", cfg.CurrentContext)
 	}
 	return &c.ID, nil
 }

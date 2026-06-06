@@ -37,17 +37,6 @@ func TestResolveContextID_SuccessReturnsID(t *testing.T) {
 	assert.Equal(t, c.ID, *id)
 }
 
-func TestResolveContextID_SuccessFallsBackToGlobal(t *testing.T) {
-	s := testutil.NewTestDB(t)
-	cfg := setupConfig(t)
-	cfg.CurrentContext = ""
-
-	id, err := cmd.ResolveContextID(s, cfg, false)
-	require.NoError(t, err)
-	require.NotNil(t, id)
-	assert.Equal(t, int64(1), *id)
-}
-
 func TestResolveContextID_ErrorContextNotFound(t *testing.T) {
 	s := testutil.NewTestDB(t)
 	cfg := setupConfig(t)

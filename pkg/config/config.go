@@ -71,22 +71,6 @@ func (c *Config) SetCurrentContext(name string) error {
 	return c.Save()
 }
 
-// CurrentContextName returns the current context, falling back to GlobalContextName if unset.
-func (c *Config) CurrentContextName() string {
-	if c.CurrentContext == "" {
-		return GlobalContextName
-	}
-	return c.CurrentContext
-}
-
-// ResolveContextName returns GlobalContextName when global is true, otherwise CurrentContextName.
-func (c *Config) ResolveContextName(global bool) string {
-	if global {
-		return GlobalContextName
-	}
-	return c.CurrentContextName()
-}
-
 // ContextDir returns the filesystem directory for a context's stored files.
 func ContextDir(name string) string {
 	return filepath.Join(Dir(), "contexts", name)

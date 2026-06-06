@@ -113,54 +113,6 @@ func TestSetCurrentContext_Success(t *testing.T) {
 	assert.Equal(t, "fix-auth", loaded.CurrentContext)
 }
 
-// ── CurrentContextName ───────────────────────────────────────────────────────
-
-func TestCurrentContextName_SuccessReturnsSetValue(t *testing.T) {
-	tmp := t.TempDir()
-	t.Setenv("HOME", tmp)
-
-	cfg, err := config.Load()
-	require.NoError(t, err)
-	cfg.CurrentContext = "fix-auth"
-
-	assert.Equal(t, "fix-auth", cfg.CurrentContextName())
-}
-
-func TestCurrentContextName_SuccessFallbackToGlobal(t *testing.T) {
-	tmp := t.TempDir()
-	t.Setenv("HOME", tmp)
-
-	cfg, err := config.Load()
-	require.NoError(t, err)
-	cfg.CurrentContext = ""
-
-	assert.Equal(t, config.GlobalContextName, cfg.CurrentContextName())
-}
-
-// ── ResolveContextName ───────────────────────────────────────────────────────
-
-func TestResolveContextName_SuccessGlobalTrue(t *testing.T) {
-	tmp := t.TempDir()
-	t.Setenv("HOME", tmp)
-
-	cfg, err := config.Load()
-	require.NoError(t, err)
-	cfg.CurrentContext = "my-ctx"
-
-	assert.Equal(t, config.GlobalContextName, cfg.ResolveContextName(true))
-}
-
-func TestResolveContextName_SuccessGlobalFalse(t *testing.T) {
-	tmp := t.TempDir()
-	t.Setenv("HOME", tmp)
-
-	cfg, err := config.Load()
-	require.NoError(t, err)
-	cfg.CurrentContext = "my-ctx"
-
-	assert.Equal(t, "my-ctx", cfg.ResolveContextName(false))
-}
-
 // ── ContextDir ───────────────────────────────────────────────────────────────
 
 func TestContextDir_Success(t *testing.T) {

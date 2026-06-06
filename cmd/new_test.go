@@ -97,5 +97,5 @@ func TestNewCommand_ErrorDuplicateName(t *testing.T) {
 	err := newCmd2.Execute()
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "UNIQUE")
+	assert.Contains(t, err.Error(), "already exists")
 }

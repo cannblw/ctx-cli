@@ -1,5 +1,15 @@
 # AGENTS.md for ctx-cli
 
+## Go version
+
+This project uses **Go 1.26**. The version is declared in three places and must be kept in sync:
+
+- `go.mod` — the `go` directive (e.g. `go 1.26.3`)
+- `.github/workflows/ci.yml` — the `go-version` in both `lint` and `test` jobs
+- This file — this section
+
+When upgrading Go, update all three.
+
 ## Cobra CLI
 
 Scaffold new commands with `cobra-cli add` — don't write command structs or init functions from scratch.

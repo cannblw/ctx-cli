@@ -223,3 +223,149 @@ func TestGetContext_ErrorCaseSensitive(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, "MyCtx", got.Name)
 }
+
+// ── Item creation ─────────────────────────────────────────────────────────────
+
+func TestCreateItem_Success(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	ctx := context.Background()
+
+	c, err := s.CreateContext(ctx, "my-ctx", "")
+	require.NoError(t, err)
+
+	todo, err := s.GetState(ctx, "todo")
+	require.NoError(t, err)
+
+	item := &models.Item{
+		Slug:      "test-item",
+		ContextID: &c.ID,
+		Type:      "link",
+		Value:     "https://example.com",
+		StateID:   &todo.ID,
+	}
+
+	require.NoError(t, s.CreateItem(ctx, item))
+	assert.NotZero(t, item.ID)
+	assert.False(t, item.CreatedAt.IsZero())
+}
+
+func TestCreateItem_SuccessGlobal(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	ctx := context.Background()
+
+	todo, err := s.GetState(ctx, "todo")
+	require.NoError(t, err)
+
+	item := &models.Item{
+		Slug:      "global-item",
+		ContextID: nil,
+		Type:      "link",
+		Value:     "https://example.com",
+		StateID:   &todo.ID,
+	}
+
+	require.NoError(t, s.CreateItem(ctx, item))
+	assert.NotZero(t, item.ID)
+	assert.Nil(t, item.ContextID)
+}
+
+func TestCreateItem_ErrorDuplicateSlug(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	ctx := context.Background()
+
+	c, err := s.CreateContext(ctx, "my-ctx", "")
+	require.NoError(t, err)
+
+	todo, err := s.GetState(ctx, "todo")
+	require.NoError(t, err)
+
+	item := &models.Item{
+		Slug:      "dup-slug",
+		ContextID: &c.ID,
+		Type:      "link",
+		Value:     "https://example.com",
+		StateID:   &todo.ID,
+	}
+	require.NoError(t, s.CreateItem(ctx, item))
+
+	dup := &models.Item{
+		Slug:      "dup-slug",
+		ContextID: &c.ID,
+		Type:      "link",
+		Value:     "https://other.com",
+		StateID:   &todo.ID,
+	}
+	err = s.CreateItem(ctx, dup)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "could not insert item")
+}
+
+// ── State retrieval ───────────────────────────────────────────────────────────
+
+func TestGetState_SuccessTodo(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	ctx := context.Background()
+
+	st, err := s.GetState(ctx, "todo")
+	require.NoError(t, err)
+	assert.Equal(t, "todo", st.Name)
+	assert.Equal(t, 0, st.Position)
+}
+
+func TestGetState_SuccessInProgress(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	ctx := context.Background()
+
+	st, err := s.GetState(ctx, "in-progress")
+	require.NoError(t, err)
+	assert.Equal(t, "in-progress", st.Name)
+	assert.Equal(t, 1, st.Position)
+}
+
+func TestGetState_ErrorNotFound(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	ctx := context.Background()
+
+	_, err := s.GetState(ctx, "nonexistent")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "could not get state")
+}
+
+// ── Item retrieval ────────────────────────────────────────────────────────────
+
+func TestGetItem_Success(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	ctx := context.Background()
+
+	c, err := s.CreateContext(ctx, "my-ctx", "")
+	require.NoError(t, err)
+
+	todo, err := s.GetState(ctx, "todo")
+	require.NoError(t, err)
+
+	item := &models.Item{
+		Slug:      "get-item-test",
+		ContextID: &c.ID,
+		Type:      "file",
+		Value:     "~/notes/foo.md",
+		StateID:   &todo.ID,
+	}
+	require.NoError(t, s.CreateItem(ctx, item))
+
+	got, err := s.GetItem(ctx, "get-item-test")
+	require.NoError(t, err)
+	assert.Equal(t, item.ID, got.ID)
+	assert.Equal(t, "get-item-test", got.Slug)
+	assert.Equal(t, "file", got.Type)
+	assert.Equal(t, "~/notes/foo.md", got.Value)
+	assert.Equal(t, c.ID, *got.ContextID)
+}
+
+func TestGetItem_ErrorNotFound(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	ctx := context.Background()
+
+	_, err := s.GetItem(ctx, "nonexistent")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "could not get item")
+}

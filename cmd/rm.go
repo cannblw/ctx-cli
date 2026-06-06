@@ -74,11 +74,11 @@ func deleteContext(s *store.Store, cfg *config.Config, name string, force bool, 
 	}
 
 	if cfg.CurrentContext == name {
-		cfg.CurrentContext = ""
+		cfg.CurrentContext = config.GlobalContextName
 		if err := cfg.Save(); err != nil {
 			return fmt.Errorf("could not save config after deleting context: %w", err)
 		}
-		fmt.Fprintln(stdout, "(active context cleared)")
+		fmt.Fprintf(stdout, "(current context is now %q)\n", config.GlobalContextName)
 	}
 
 	fmt.Fprintf(stdout, "Deleted context %q\n", name)

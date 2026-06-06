@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/cannblw/ctx-cli/cmd"
+	"github.com/cannblw/ctx-cli/pkg/config"
 	"github.com/cannblw/ctx-cli/pkg/testutil"
 )
 
@@ -31,8 +32,8 @@ func TestRmCommand_SuccessForce(t *testing.T) {
 	require.NoError(t, rmCmd.Execute())
 
 	assert.Contains(t, buf.String(), `Deleted context "temp"`)
-	assert.Contains(t, buf.String(), "(active context cleared)")
-	assert.Equal(t, "", cfg.CurrentContext)
+	assert.Contains(t, buf.String(), `(current context is now "global")`)
+	assert.Equal(t, config.GlobalContextName, cfg.CurrentContext)
 
 	_, err := s.GetContext(context.Background(), "temp")
 	assert.Error(t, err)
@@ -54,7 +55,7 @@ func TestRmCommand_SuccessForceNotActive(t *testing.T) {
 	require.NoError(t, rmCmd.Execute())
 
 	assert.Contains(t, buf.String(), `Deleted context "temp"`)
-	assert.NotContains(t, buf.String(), "(active context cleared)")
+	assert.NotContains(t, buf.String(), "(current context is now")
 	assert.Equal(t, "other", cfg.CurrentContext)
 }
 

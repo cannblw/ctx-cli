@@ -125,19 +125,6 @@ func resolveItemType(value, itemType string) (string, bool, error) {
 	return itemType, true, nil
 }
 
-func resolveContextID(s *store.Store, cfg *config.Config, isGlobal bool) (*int64, error) {
-	if isGlobal {
-		return nil, nil
-	}
-
-	currentCtx := cfg.CurrentContextName()
-	c, err := s.GetContext(context.Background(), currentCtx)
-	if err != nil {
-		return nil, fmt.Errorf("current context %q not found", currentCtx)
-	}
-	return &c.ID, nil
-}
-
 func copyFileToCtxDir(src, ctxName string) (string, error) {
 	destDir := config.ContextDir(ctxName)
 	if err := os.MkdirAll(destDir, 0755); err != nil {

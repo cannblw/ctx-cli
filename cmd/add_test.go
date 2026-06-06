@@ -189,23 +189,6 @@ func TestAddCommand_SuccessExplicitFileType(t *testing.T) {
 	assert.Contains(t, item.Value, "contexts")
 }
 
-func TestAddCommand_ErrorFileNotFound(t *testing.T) {
-	s := testutil.NewTestDB(t)
-	ctx := context.Background()
-	s.CreateContext(ctx, "my-ctx", "")
-
-	cfg := setupConfig(t)
-	cfg.CurrentContext = "my-ctx"
-	buf := &bytes.Buffer{}
-
-	addCmd := cmd.NewAddCmd(s, cfg, buf)
-	addCmd.SetArgs([]string{"/nonexistent/file.txt", "--type", "file"})
-	err := addCmd.Execute()
-
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "could not open file")
-}
-
 func TestAddCommand_SuccessSlugCollision(t *testing.T) {
 	s := testutil.NewTestDB(t)
 	ctx := context.Background()
@@ -295,6 +278,23 @@ func TestAddCommand_ErrorNoArgs(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "accepts 1 arg")
+}
+
+func TestAddCommand_ErrorFileNotFound(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	ctx := context.Background()
+	s.CreateContext(ctx, "my-ctx", "")
+
+	cfg := setupConfig(t)
+	cfg.CurrentContext = "my-ctx"
+	buf := &bytes.Buffer{}
+
+	addCmd := cmd.NewAddCmd(s, cfg, buf)
+	addCmd.SetArgs([]string{"/nonexistent/file.txt", "--type", "file"})
+	err := addCmd.Execute()
+
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "could not open file")
 }
 
 // ── DetectType ───────────────────────────────────────────────────────────────

@@ -8,8 +8,8 @@ import (
 	"github.com/cannblw/ctx-cli/pkg/store"
 )
 
-// resolveContextID returns nil for global items, otherwise the current context's DB ID.
-func resolveContextID(s *store.Store, cfg *config.Config, isGlobal bool) (*int64, error) {
+// ResolveContextID returns nil for global items, otherwise the current context's DB ID.
+func ResolveContextID(s *store.Store, cfg *config.Config, isGlobal bool) (*int64, error) {
 	if isGlobal {
 		return nil, nil
 	}

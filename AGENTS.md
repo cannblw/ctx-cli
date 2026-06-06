@@ -119,5 +119,3 @@ func TestNewCommand_Success(t *testing.T) { ... }
 
 func TestNewCommand_ErrorNoArgs(t *testing.T) { ... }
 ```
-
-Since these are integration tests (real DB, no mocks), section names describe the behavior domain, not specific method names (e.g. `Context creation`, not `CreateContext`).

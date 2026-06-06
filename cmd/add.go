@@ -62,7 +62,7 @@ Examples:
 				return err
 			}
 
-			contextID, err := resolveContextID(s, cfg, isGlobal)
+			contextID, err := ResolveContextID(s, cfg, isGlobal)
 			if err != nil {
 				return err
 			}

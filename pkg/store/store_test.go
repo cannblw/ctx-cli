@@ -125,6 +125,26 @@ func TestContext_SuccessDeleteCascadesItems(t *testing.T) {
 	assert.Error(t, err, "item should be cascade-deleted")
 }
 
+func TestDeleteContext_Success(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	ctx := context.Background()
+
+	s.CreateContext(ctx, "temp", "")
+	require.NoError(t, s.DeleteContext(ctx, "temp"))
+
+	_, err := s.GetContext(ctx, "temp")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "could not get context")
+}
+
+func TestDeleteContext_ErrorNotFound(t *testing.T) {
+	s := testutil.NewTestDB(t)
+
+	err := s.DeleteContext(context.Background(), "nope")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "could not find")
+}
+
 // ── Context creation errors ──────────────────────────────────────────────────
 
 func TestCreateContext_ErrorDuplicateName(t *testing.T) {

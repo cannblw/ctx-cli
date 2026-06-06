@@ -1,0 +1,15 @@
+linters:
+  enable:
+    - revive
+linters-settings:
+  revive:
+    rules:
+      - name: exported
+        arguments:
+          - checkPrivateReceivers: true
+            sayRepetitiveInsteadOfStutters: true
+issues:
+  exclude-rules:
+    - path: _test\.go$
+      linters:
+        - revive

@@ -11,7 +11,7 @@ import (
 	"github.com/cannblw/ctx-cli/pkg/config"
 )
 
-// ── Load ──────────────────────────────────────────────────────────────────────
+// ── Load ─────────────────────────────────────────────────────────────────────
 
 func TestLoad_SuccessCreatesDefault(t *testing.T) {
 	tmp := t.TempDir()
@@ -42,7 +42,7 @@ func TestLoad_SuccessReadsExisting(t *testing.T) {
 	assert.Equal(t, "fix-auth", cfg.CurrentContext)
 }
 
-// ── Load errors ───────────────────────────────────────────────────────────────
+// ── Load errors ──────────────────────────────────────────────────────────────
 
 func TestLoad_ErrorCorruptedYAML(t *testing.T) {
 	tmp := t.TempDir()
@@ -60,7 +60,7 @@ func TestLoad_ErrorCorruptedYAML(t *testing.T) {
 	assert.Error(t, err)
 }
 
-// ── Save ──────────────────────────────────────────────────────────────────────
+// ── Save ─────────────────────────────────────────────────────────────────────
 
 func TestSave_SuccessRoundTrip(t *testing.T) {
 	tmp := t.TempDir()

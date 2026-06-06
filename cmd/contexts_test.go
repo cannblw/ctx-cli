@@ -67,7 +67,7 @@ func TestContextsCommand_SuccessAliasC(t *testing.T) {
 	assert.Contains(t, output, "Fix the auth bug")
 }
 
-// ── Contexts command switch-via-name ──────────────────────────────────────────
+// ── Contexts command switch-via-name ─────────────────────────────────────────
 
 func TestContextsCommand_SuccessSwitchWithName(t *testing.T) {
 	s := testutil.NewTestDB(t)

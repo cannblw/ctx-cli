@@ -69,7 +69,7 @@ Examples:
 
 			storedValue := value
 			if itemType == "file" {
-				ctxName := resolveContextName(cfg, addGlobal)
+				ctxName := cfg.ResolveContextName(addGlobal)
 				copied, err := copyFileToCtxDir(value, ctxName)
 				if err != nil {
 					return err
@@ -138,13 +138,6 @@ func resolveContextID(s *store.Store, cfg *config.Config, addGlobal bool) (*int6
 		return nil, fmt.Errorf("current context %q not found", currentCtx)
 	}
 	return &c.ID, nil
-}
-
-func resolveContextName(cfg *config.Config, addGlobal bool) string {
-	if addGlobal {
-		return config.GlobalContextName
-	}
-	return cfg.CurrentContextName()
 }
 
 func copyFileToCtxDir(src, ctxName string) (string, error) {

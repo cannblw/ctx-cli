@@ -79,6 +79,14 @@ func (c *Config) CurrentContextName() string {
 	return c.CurrentContext
 }
 
+// ResolveContextName returns GlobalContextName when global is true, otherwise CurrentContextName.
+func (c *Config) ResolveContextName(global bool) string {
+	if global {
+		return GlobalContextName
+	}
+	return c.CurrentContextName()
+}
+
 // ContextDir returns the filesystem directory for a context's stored files.
 func ContextDir(name string) string {
 	return filepath.Join(Dir(), "contexts", name)

@@ -29,9 +29,11 @@ func NewRmCmd(s *store.Store, cfg *config.Config, stdin io.Reader, stdout io.Wri
 Examples:
   # Delete a context (with confirmation)
   ctx rm --context fix-auth
+  ctx rm --ctx fix-auth
 
   # Delete a context (skip confirmation)
-  ctx rm --context fix-auth --force`,
+  ctx rm --context fix-auth --force
+  ctx rm --ctx fix-auth -f`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if rmContextName != "" {
 				return deleteContext(s, cfg, rmContextName, rmForce, stdin, stdout)
@@ -44,6 +46,7 @@ Examples:
 	}
 
 	cmd.Flags().StringVar(&rmContextName, "context", "", "name of the context to delete")
+	cmd.Flags().StringVar(&rmContextName, "ctx", "", "alias for --context")
 	cmd.Flags().BoolVarP(&rmForce, "force", "f", false, "skip confirmation prompt")
 	cmd.SetOut(stdout)
 	return cmd

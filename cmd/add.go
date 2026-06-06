@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strconv"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -171,23 +170,12 @@ func printAdded(stdout io.Writer, item *models.Item, value, itemType string, aut
 }
 
 func nextSlug(s *store.Store, base string) (string, error) {
-	existing, err := s.FindSlugsByPrefix(context.Background(), base)
+	count, err := s.CountSlugsByPrefix(context.Background(), base)
 	if err != nil {
 		return "", err
 	}
-	if len(existing) == 0 {
+	if count == 0 {
 		return base, nil
 	}
-
-	maxSuffix := 1
-	for _, slug := range existing {
-		if slug == base {
-			continue
-		}
-		rest := strings.TrimPrefix(slug, base+"-")
-		if n, err := strconv.Atoi(rest); err == nil && n > maxSuffix {
-			maxSuffix = n
-		}
-	}
-	return fmt.Sprintf("%s-%d", base, maxSuffix+1), nil
+	return fmt.Sprintf("%s-%d", base, count+1), nil
 }

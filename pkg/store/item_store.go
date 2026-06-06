@@ -3,6 +3,8 @@ package store
 import (
 	"context"
 	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/cannblw/ctx-cli/pkg/models"
 )
@@ -24,8 +26,8 @@ func (s *Store) GetItem(ctx context.Context, identifier string) (*models.Item, e
 	return item, nil
 }
 
-// FindSlugsByPrefix returns all slugs that match base or base-<number>.
-func (s *Store) FindSlugsByPrefix(ctx context.Context, prefix string) ([]string, error) {
+// CountSlugsByPrefix returns the number of items whose slug matches prefix or prefix-<number>.
+func (s *Store) CountSlugsByPrefix(ctx context.Context, prefix string) (int, error) {
 	var slugs []string
 	err := s.db.NewSelect().
 		Model((*models.Item)(nil)).
@@ -33,7 +35,19 @@ func (s *Store) FindSlugsByPrefix(ctx context.Context, prefix string) ([]string,
 		Where("slug = ? OR slug LIKE ?", prefix, prefix+"-%").
 		Scan(ctx, &slugs)
 	if err != nil {
-		return nil, fmt.Errorf("could not find slugs by prefix %q: %w", prefix, err)
+		return 0, fmt.Errorf("could not count slugs by prefix %q: %w", prefix, err)
 	}
-	return slugs, nil
+
+	count := 0
+	for _, slug := range slugs {
+		if slug == prefix {
+			count++
+			continue
+		}
+		rest := strings.TrimPrefix(slug, prefix+"-")
+		if _, err := strconv.Atoi(rest); err == nil {
+			count++
+		}
+	}
+	return count, nil
 }

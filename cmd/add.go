@@ -15,11 +15,18 @@ import (
 	"github.com/cannblw/ctx-cli/pkg/store"
 )
 
-var validTypes = map[string]struct{}{
-	"link":   {},
-	"pr":     {},
-	"ticket": {},
-	"file":   {},
+var validTypeNames = []string{"link", "pr", "ticket", "file"}
+
+var validTypes = buildTypeMap()
+
+var validTypesStr = strings.Join(validTypeNames, ", ")
+
+func buildTypeMap() map[string]struct{} {
+	m := make(map[string]struct{}, len(validTypeNames))
+	for _, t := range validTypeNames {
+		m[t] = struct{}{}
+	}
+	return m
 }
 
 // NewAddCmd creates the `ctx add` command.
@@ -69,7 +76,7 @@ Examples:
 		},
 	}
 
-	cmd.Flags().StringVarP(&addType, "type", "t", "", "item type: link, pr, ticket, file")
+	cmd.Flags().StringVarP(&addType, "type", "t", "", "item type: "+validTypesStr)
 	cmd.Flags().BoolVarP(&addGlobal, "global", "g", false, "add item globally (no context)")
 	return cmd
 }
@@ -91,13 +98,13 @@ func DetectType(value string) (string, error) {
 			}
 		}
 	}
-	return "", fmt.Errorf("could not detect type for %q, use --type to specify one of link, pr, ticket, file", value)
+	return "", fmt.Errorf("could not detect type for %q, use --type to specify one of "+validTypesStr, value)
 }
 
 func resolveItemType(value, addType string) (string, bool, error) {
 	if addType != "" {
 		if _, ok := validTypes[addType]; !ok {
-			return "", false, fmt.Errorf("invalid type %q: must be one of link, pr, ticket, file", addType)
+			return "", false, fmt.Errorf("invalid type %q: must be one of "+validTypesStr, addType)
 		}
 		return addType, false, nil
 	}

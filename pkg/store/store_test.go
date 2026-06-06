@@ -224,7 +224,7 @@ func TestGetContext_ErrorCaseSensitive(t *testing.T) {
 	assert.Equal(t, "MyCtx", got.Name)
 }
 
-// ── Item creation ─────────────────────────────────────────────────────────────
+// ── Item creation ────────────────────────────────────────────────────────────
 
 func TestCreateItem_Success(t *testing.T) {
 	s := testutil.NewTestDB(t)
@@ -300,7 +300,7 @@ func TestCreateItem_ErrorDuplicateSlug(t *testing.T) {
 	assert.Contains(t, err.Error(), "could not insert item")
 }
 
-// ── State retrieval ───────────────────────────────────────────────────────────
+// ── State retrieval ──────────────────────────────────────────────────────────
 
 func TestGetState_SuccessTodo(t *testing.T) {
 	s := testutil.NewTestDB(t)
@@ -331,7 +331,7 @@ func TestGetState_ErrorNotFound(t *testing.T) {
 	assert.Contains(t, err.Error(), "could not get state")
 }
 
-// ── Item retrieval ────────────────────────────────────────────────────────────
+// ── Item retrieval ───────────────────────────────────────────────────────────
 
 func TestGetItem_Success(t *testing.T) {
 	s := testutil.NewTestDB(t)

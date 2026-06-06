@@ -14,7 +14,7 @@ import (
 	"github.com/cannblw/ctx-cli/pkg/testutil"
 )
 
-// ── Add command successes ─────────────────────────────────────────────────────
+// ── Add command successes ────────────────────────────────────────────────────
 
 func TestAddCommand_Success(t *testing.T) {
 	s := testutil.NewTestDB(t)
@@ -131,7 +131,7 @@ func TestAddCommand_SuccessSlugCollision(t *testing.T) {
 	assert.Contains(t, output, "https-example-com-2")
 }
 
-// ── Add command errors ────────────────────────────────────────────────────────
+// ── Add command errors ───────────────────────────────────────────────────────
 
 func TestAddCommand_ErrorInvalidType(t *testing.T) {
 	s := testutil.NewTestDB(t)
@@ -176,7 +176,7 @@ func TestAddCommand_ErrorNoArgs(t *testing.T) {
 	assert.Contains(t, err.Error(), "accepts 1 arg")
 }
 
-// ── DetectType ────────────────────────────────────────────────────────────────
+// ── DetectType ───────────────────────────────────────────────────────────────
 
 func TestDetectType_SuccessURL(t *testing.T) {
 	assert.Equal(t, "link", cmd.DetectType("https://example.com"))

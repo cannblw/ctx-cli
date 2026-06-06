@@ -7,6 +7,7 @@ import (
 	"github.com/cannblw/ctx-cli/pkg/models"
 )
 
+// GetState retrieves a state by name.
 func (s *Store) GetState(ctx context.Context, name string) (*models.State, error) {
 	state := &models.State{}
 	err := s.db.NewSelect().Model(state).Where("name = ?", name).Scan(ctx)

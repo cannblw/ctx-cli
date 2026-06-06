@@ -9,7 +9,7 @@ import (
 	"github.com/cannblw/ctx-cli/pkg/slug"
 )
 
-// ── FromValue successes ───────────────────────────────────────────────────────
+// ── FromValue successes ──────────────────────────────────────────────────────
 
 func TestFromValue_SuccessURL(t *testing.T) {
 	s := slug.FromValue("https://github.com/org/repo/pull/42")

@@ -32,6 +32,7 @@ func main() {
 		cmd.NewContextsCmd(s, cfg, os.Stdout),
 		cmd.NewSwitchCmd(s, cfg, os.Stdout),
 		cmd.NewRenameCmd(s, cfg, os.Stdout),
+		cmd.NewRmCmd(s, cfg, os.Stdin, os.Stdout),
 	)
 
 	if err := rootCmd.Execute(); err != nil {

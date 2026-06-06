@@ -50,9 +50,15 @@ Examples:
 				return fmt.Errorf("value cannot be empty")
 			}
 
+			autoDetected := false
 			itemType := addType
 			if itemType == "" {
-				itemType = DetectType(value)
+				var err error
+				itemType, err = DetectType(value)
+				if err != nil {
+					return err
+				}
+				autoDetected = true
 			}
 
 			if _, ok := validTypes[itemType]; !ok {
@@ -94,11 +100,15 @@ Examples:
 				return err
 			}
 
+			typeLabel := itemType
+			if autoDetected {
+				typeLabel = "auto-detected as " + itemType
+			}
 			scope := "globally"
 			if contextID != nil {
 				scope = fmt.Sprintf("in context %q", cfg.CurrentContext)
 			}
-			fmt.Fprintf(stdout, "Added [%s] %s (%s) %s\n", item.Slug, value, itemType, scope)
+			fmt.Fprintf(stdout, "Added [%s] %s (%s) %s\n", item.Slug, value, typeLabel, scope)
 			return nil
 		},
 	}
@@ -109,23 +119,23 @@ Examples:
 }
 
 // DetectType auto-detects the item type from the value.
-func DetectType(value string) string {
+func DetectType(value string) (string, error) {
 	if strings.HasPrefix(value, "http://") || strings.HasPrefix(value, "https://") {
-		return "link"
+		return "link", nil
 	}
 	if _, err := os.Stat(value); err == nil {
-		return "file"
+		return "file", nil
 	}
 	if strings.HasPrefix(value, "~/") {
 		expanded, err := os.UserHomeDir()
 		if err == nil {
 			path := expanded + value[1:]
 			if _, err := os.Stat(path); err == nil {
-				return "file"
+				return "file", nil
 			}
 		}
 	}
-	return "link"
+	return "", fmt.Errorf("could not detect type for %q, use --type to specify one of link, pr, ticket, file", value)
 }
 
 func nextSlug(s *store.Store, base string) (string, error) {

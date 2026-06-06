@@ -32,7 +32,7 @@ func TestAddCommand_Success(t *testing.T) {
 	output := buf.String()
 	assert.Contains(t, output, "Added")
 	assert.Contains(t, output, "https://github.com/org/repo/pull/42")
-	assert.Contains(t, output, "link")
+	assert.Contains(t, output, "auto-detected as link")
 	assert.Contains(t, output, `in context "my-ctx"`)
 }
 
@@ -48,6 +48,7 @@ func TestAddCommand_SuccessGlobal(t *testing.T) {
 
 	output := buf.String()
 	assert.Contains(t, output, "Added")
+	assert.Contains(t, output, "auto-detected as link")
 	assert.Contains(t, output, "globally")
 }
 
@@ -64,7 +65,7 @@ func TestAddCommand_SuccessAliasA(t *testing.T) {
 	addCmd.SetArgs([]string{"https://example.com"})
 	require.NoError(t, addCmd.Execute())
 
-	assert.Contains(t, buf.String(), "Added")
+	assert.Contains(t, buf.String(), "auto-detected as link")
 }
 
 func TestAddCommand_SuccessTypeOverride(t *testing.T) {
@@ -80,7 +81,9 @@ func TestAddCommand_SuccessTypeOverride(t *testing.T) {
 	addCmd.SetArgs([]string{"https://jira.example.com/PROJ-123", "--type", "ticket"})
 	require.NoError(t, addCmd.Execute())
 
-	assert.Contains(t, buf.String(), "ticket")
+	output := buf.String()
+	assert.Contains(t, output, "(ticket)")
+	assert.NotContains(t, output, "auto-detected")
 }
 
 func TestAddCommand_SuccessFileType(t *testing.T) {
@@ -100,7 +103,7 @@ func TestAddCommand_SuccessFileType(t *testing.T) {
 	addCmd.SetArgs([]string{f})
 	require.NoError(t, addCmd.Execute())
 
-	assert.Contains(t, buf.String(), "file")
+	assert.Contains(t, buf.String(), "auto-detected as file")
 }
 
 func TestAddCommand_SuccessSlugCollision(t *testing.T) {
@@ -132,6 +135,24 @@ func TestAddCommand_SuccessSlugCollision(t *testing.T) {
 }
 
 // ── Add command errors ───────────────────────────────────────────────────────
+
+func TestAddCommand_ErrorUndetectableType(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	ctx := context.Background()
+	s.CreateContext(ctx, "my-ctx", "")
+
+	cfg := setupConfig(t)
+	cfg.CurrentContext = "my-ctx"
+	buf := &bytes.Buffer{}
+
+	addCmd := cmd.NewAddCmd(s, cfg, buf)
+	addCmd.SetArgs([]string{"just-some-text"})
+	err := addCmd.Execute()
+
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "could not detect type")
+	assert.Contains(t, err.Error(), "--type")
+}
 
 func TestAddCommand_ErrorInvalidType(t *testing.T) {
 	s := testutil.NewTestDB(t)
@@ -179,17 +200,27 @@ func TestAddCommand_ErrorNoArgs(t *testing.T) {
 // ── DetectType ───────────────────────────────────────────────────────────────
 
 func TestDetectType_SuccessURL(t *testing.T) {
-	assert.Equal(t, "link", cmd.DetectType("https://example.com"))
-	assert.Equal(t, "link", cmd.DetectType("http://example.com"))
+	typ, err := cmd.DetectType("https://example.com")
+	require.NoError(t, err)
+	assert.Equal(t, "link", typ)
+
+	typ, err = cmd.DetectType("http://example.com")
+	require.NoError(t, err)
+	assert.Equal(t, "link", typ)
 }
 
 func TestDetectType_SuccessExistingFile(t *testing.T) {
 	tmp := t.TempDir()
 	f := filepath.Join(tmp, "notes.md")
 	os.WriteFile(f, []byte("test"), 0644)
-	assert.Equal(t, "file", cmd.DetectType(f))
+
+	typ, err := cmd.DetectType(f)
+	require.NoError(t, err)
+	assert.Equal(t, "file", typ)
 }
 
-func TestDetectType_SuccessPlainString(t *testing.T) {
-	assert.Equal(t, "link", cmd.DetectType("just-some-text"))
+func TestDetectType_ErrorPlainString(t *testing.T) {
+	_, err := cmd.DetectType("just-some-text")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "could not detect type")
 }

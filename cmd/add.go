@@ -30,7 +30,7 @@ func NewAddCmd(s *store.Store, cfg *config.Config, stdout io.Writer) *cobra.Comm
 	)
 
 	cmd := &cobra.Command{
-		Use:     "add <value>",
+		Use:     "add <item>",
 		Aliases: []string{"a"},
 		Short:   "Add an item to the current context",
 		Long: `Add an item (link, PR, ticket, file path, etc.) to the current context.

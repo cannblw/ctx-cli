@@ -60,14 +60,14 @@ Examples:
 
 			var contextID *int64
 			if !addGlobal {
-			currentCtx := cfg.CurrentContext
-			if currentCtx == "" {
-				currentCtx = config.GlobalContextName
-			}
-			c, err := s.GetContext(context.Background(), currentCtx)
-			if err != nil {
-				return fmt.Errorf("current context %q not found", currentCtx)
-			}
+				currentCtx := cfg.CurrentContext
+				if currentCtx == "" {
+					currentCtx = config.GlobalContextName
+				}
+				c, err := s.GetContext(context.Background(), currentCtx)
+				if err != nil {
+					return fmt.Errorf("current context %q not found", currentCtx)
+				}
 				contextID = &c.ID
 			}
 

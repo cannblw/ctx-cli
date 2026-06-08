@@ -157,7 +157,7 @@ func TestRenameCommand_ErrorGlobalContext(t *testing.T) {
 	err := renameCmd.Execute()
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "cannot rename the global context")
+	assert.Contains(t, err.Error(), "database update matched no rows")
 }
 
 func TestRenameCommand_ErrorNoArgs(t *testing.T) {

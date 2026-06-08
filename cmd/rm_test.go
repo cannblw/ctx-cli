@@ -185,7 +185,7 @@ func TestRmCommand_ErrorGlobalContext(t *testing.T) {
 	err := rmCmd.Execute()
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "cannot delete the global context")
+	assert.Contains(t, err.Error(), `could not find context "global"`)
 }
 
 func TestRmCommand_ErrorGlobalContextEmpty(t *testing.T) {

@@ -36,7 +36,7 @@ Examples:
   ctx rm --context fix-auth --force
   ctx rm --ctx fix-auth -f`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if rmContextName == "global" || (rmContextName == "" && cmd.Flags().Changed("context")) {
+			if rmContextName == "" && cmd.Flags().Changed("context") {
 				return fmt.Errorf("cannot delete the global context")
 			}
 			if rmContextName != "" {
@@ -57,7 +57,7 @@ Examples:
 }
 
 func deleteContext(s *store.Store, cfg *config.Config, name string, force bool, stdin io.Reader, stdout io.Writer) error {
-	if name == "" || name == "global" {
+	if name == "" {
 		return fmt.Errorf("cannot delete the global context")
 	}
 

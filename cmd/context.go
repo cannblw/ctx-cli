@@ -9,7 +9,7 @@ import (
 )
 
 func ResolveContextID(s *store.Store, cfg *config.Config, isGlobal bool) (*int64, error) {
-	if isGlobal || cfg.CurrentContext == "" || cfg.CurrentContext == "global" {
+	if isGlobal || cfg.CurrentContext == "" {
 		return nil, nil
 	}
 

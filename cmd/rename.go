@@ -26,9 +26,6 @@ Examples:
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			oldName, newName := args[0], args[1]
-			if oldName == "" || oldName == "global" {
-				return fmt.Errorf("cannot rename the global context")
-			}
 			if newName == "" {
 				return fmt.Errorf("new name cannot be empty")
 			}

@@ -68,9 +68,9 @@ Examples:
 			}
 
 			if itemType == "file" {
-				ctxName := config.GlobalContextName
-				if !isGlobal {
-					ctxName = cfg.CurrentContext
+				ctxName := cfg.CurrentContext
+				if isGlobal {
+					ctxName = ""
 				}
 				value, err = copyFileToCtxDir(value, ctxName)
 				if err != nil {

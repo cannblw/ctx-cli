@@ -65,17 +65,6 @@ func TestMigration_SuccessCreatesDefaultStates(t *testing.T) {
 	assert.False(t, states[3].Orphaned)
 }
 
-func TestMigration_SuccessPreseedsGlobalContext(t *testing.T) {
-	db := newTestBunDB(t)
-
-	c := &models.Context{}
-	err := db.NewSelect().Model(c).Where("name = ?", config.GlobalContextName).Scan(context.Background())
-
-	require.NoError(t, err)
-	assert.Equal(t, config.GlobalContextName, c.Name)
-	assert.Equal(t, "Default global context", c.Description)
-}
-
 func TestMigration_SuccessCreatesContextsTable(t *testing.T) {
 	db := newTestBunDB(t)
 
@@ -110,6 +99,14 @@ func TestMigration_SuccessCreatesItemsTable(t *testing.T) {
 	_, err = db.NewInsert().Model(item).Exec(context.Background())
 	require.NoError(t, err)
 	assert.NotZero(t, item.ID)
+}
+
+func TestMigration_SuccessNoGlobalContextRow(t *testing.T) {
+	db := newTestBunDB(t)
+
+	count, err := db.NewSelect().Model((*models.Context)(nil)).Where("name = ?", "global").Count(context.Background())
+	require.NoError(t, err)
+	assert.Equal(t, 0, count, "no global context row should exist")
 }
 
 // ── Migration idempotency ────────────────────────────────────────────────────

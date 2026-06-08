@@ -147,6 +147,19 @@ func TestRenameCommand_ErrorOldNotFound(t *testing.T) {
 	assert.Contains(t, err.Error(), "database update matched no rows")
 }
 
+func TestRenameCommand_ErrorGlobalContext(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	cfg := setupConfig(t)
+	buf := &bytes.Buffer{}
+
+	renameCmd := cmd.NewRenameCmd(s, cfg, buf)
+	renameCmd.SetArgs([]string{"global", "x"})
+	err := renameCmd.Execute()
+
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "cannot rename the global context")
+}
+
 func TestRenameCommand_ErrorNoArgs(t *testing.T) {
 	s := testutil.NewTestDB(t)
 	cfg := setupConfig(t)

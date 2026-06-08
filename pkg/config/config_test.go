@@ -19,7 +19,7 @@ func TestLoad_SuccessCreatesDefault(t *testing.T) {
 
 	cfg, err := config.Load()
 	require.NoError(t, err)
-	assert.Equal(t, config.GlobalContextName, cfg.CurrentContext)
+	assert.Equal(t, "", cfg.CurrentContext)
 	assert.Equal(t, config.DefaultItemState, cfg.DefaultItemState)
 
 	_, err = os.Stat(filepath.Join(tmp, ".ctx", "config.yaml"))
@@ -113,6 +113,25 @@ func TestSetCurrentContext_Success(t *testing.T) {
 	assert.Equal(t, "fix-auth", loaded.CurrentContext)
 }
 
+// ── ClearCurrentContext ──────────────────────────────────────────────────────
+
+func TestClearCurrentContext_Success(t *testing.T) {
+	tmp := t.TempDir()
+	t.Setenv("HOME", tmp)
+
+	cfg, err := config.Load()
+	require.NoError(t, err)
+	require.NoError(t, cfg.SetCurrentContext("fix-auth"))
+	assert.Equal(t, "fix-auth", cfg.CurrentContext)
+
+	require.NoError(t, cfg.ClearCurrentContext())
+	assert.Equal(t, "", cfg.CurrentContext)
+
+	loaded, err := config.Load()
+	require.NoError(t, err)
+	assert.Empty(t, loaded.CurrentContext)
+}
+
 // ── ContextDir ───────────────────────────────────────────────────────────────
 
 func TestContextDir_Success(t *testing.T) {
@@ -123,12 +142,6 @@ func TestContextDir_Success(t *testing.T) {
 	assert.Contains(t, dir, ".ctx")
 	assert.Contains(t, dir, "contexts")
 	assert.Contains(t, dir, "my-ctx")
-}
-
-func TestContextDir_SuccessGlobal(t *testing.T) {
-	dir := config.ContextDir("global")
-	assert.Contains(t, dir, "contexts")
-	assert.Contains(t, dir, "global")
 }
 
 // ── DefaultState ─────────────────────────────────────────────────────────────

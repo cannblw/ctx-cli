@@ -157,8 +157,11 @@ func TestAddCommand_SuccessFileCopyGlobal(t *testing.T) {
 	require.NoError(t, err)
 	assert.Nil(t, item.ContextID)
 	assert.Contains(t, item.Value, "contexts")
-	assert.Contains(t, item.Value, "global")
 	assert.Contains(t, item.Value, "notes.md")
+
+	copied, err := os.Stat(item.Value)
+	require.NoError(t, err)
+	assert.False(t, copied.IsDir())
 }
 
 func TestAddCommand_SuccessExplicitFileType(t *testing.T) {

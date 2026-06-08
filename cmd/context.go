@@ -8,9 +8,8 @@ import (
 	"github.com/cannblw/ctx-cli/pkg/store"
 )
 
-// ResolveContextID returns nil for global items, otherwise the current context's DB ID.
 func ResolveContextID(s *store.Store, cfg *config.Config, isGlobal bool) (*int64, error) {
-	if isGlobal {
+	if isGlobal || cfg.CurrentContext == "" || cfg.CurrentContext == "global" {
 		return nil, nil
 	}
 

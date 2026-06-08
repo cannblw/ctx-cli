@@ -25,8 +25,8 @@ Examples:
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name := args[0]
-			if name == "" {
-				return fmt.Errorf("context name cannot be empty")
+			if name == "" || name == "global" {
+				return fmt.Errorf("context name cannot be empty or %q", "global")
 			}
 
 			ctx := context.Background()

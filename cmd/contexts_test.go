@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/cannblw/ctx-cli/cmd"
-	"github.com/cannblw/ctx-cli/pkg/config"
 	"github.com/cannblw/ctx-cli/pkg/testutil"
 )
 
@@ -24,8 +23,7 @@ func TestContextsCommand_SuccessEmpty(t *testing.T) {
 	ctxCmd.SetArgs([]string{})
 	require.NoError(t, ctxCmd.Execute())
 
-	assert.Contains(t, buf.String(), config.GlobalContextName)
-	assert.Contains(t, buf.String(), "Default global context")
+	assert.Contains(t, buf.String(), "No contexts yet")
 }
 
 func TestContextsCommand_SuccessWithContexts(t *testing.T) {
@@ -47,6 +45,7 @@ func TestContextsCommand_SuccessWithContexts(t *testing.T) {
 	assert.Contains(t, output, "fix-auth")
 	assert.Contains(t, output, "migrate-db")
 	assert.Contains(t, output, "Fix the auth bug")
+	assert.NotContains(t, output, "global")
 }
 
 func TestContextsCommand_SuccessAliasC(t *testing.T) {
@@ -86,30 +85,32 @@ func TestContextsCommand_SuccessSwitchWithName(t *testing.T) {
 	assert.Equal(t, "fix-auth", cfg.CurrentContext)
 }
 
-func TestContextsCommand_SuccessSwitchToGlobal(t *testing.T) {
+func TestContextsCommand_SuccessSwitchToGlobalAlias(t *testing.T) {
 	s := testutil.NewTestDB(t)
 	cfg := setupConfig(t)
+
 	buf := &bytes.Buffer{}
 
 	ctxCmd := cmd.NewContextsCmd(s, cfg, buf)
-	ctxCmd.SetArgs([]string{config.GlobalContextName})
+	ctxCmd.SetArgs([]string{"global"})
 	require.NoError(t, ctxCmd.Execute())
 
-	assert.Contains(t, buf.String(), `Switched to context "`+config.GlobalContextName+`"`)
-	assert.Equal(t, config.GlobalContextName, cfg.CurrentContext)
+	assert.Contains(t, buf.String(), "Switched to global")
+	assert.Equal(t, "", cfg.CurrentContext)
 }
 
-func TestContextsCommand_ErrorSwitchEmptyName(t *testing.T) {
+func TestContextsCommand_SuccessSwitchToGlobalEmpty(t *testing.T) {
 	s := testutil.NewTestDB(t)
 	cfg := setupConfig(t)
+
 	buf := &bytes.Buffer{}
 
 	ctxCmd := cmd.NewContextsCmd(s, cfg, buf)
 	ctxCmd.SetArgs([]string{""})
-	err := ctxCmd.Execute()
+	require.NoError(t, ctxCmd.Execute())
 
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "context name is required")
+	assert.Contains(t, buf.String(), "Switched to global")
+	assert.Equal(t, "", cfg.CurrentContext)
 }
 
 func TestContextsCommand_ErrorSwitchNotFound(t *testing.T) {

@@ -26,7 +26,7 @@ Examples:
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name := args[0]
 			if name == "" || name == "global" {
-				return fmt.Errorf("context name cannot be empty or \"global\"")
+				return fmt.Errorf(`context name cannot be empty or "global"`)
 			}
 
 			ctx := context.Background()

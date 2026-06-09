@@ -76,7 +76,7 @@ func (c *Config) ClearCurrentContext() error {
 	return c.Save()
 }
 
-// ContextDir returns the filesystem directory for a context's stored files.
-func ContextDir(name string) string {
+// GetContextDir returns the filesystem directory for a context's stored files.
+func GetContextDir(name string) string {
 	return filepath.Join(Dir(), "contexts", name)
 }

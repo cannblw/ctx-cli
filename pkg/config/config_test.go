@@ -132,13 +132,13 @@ func TestClearCurrentContext_Success(t *testing.T) {
 	assert.Empty(t, loaded.CurrentContext)
 }
 
-// ── ContextDir ───────────────────────────────────────────────────────────────
+// ── GetContextDir ─────────────────────────────────────────────────────────
 
-func TestContextDir_Success(t *testing.T) {
+func TestGetContextDir_Success(t *testing.T) {
 	tmp := t.TempDir()
 	t.Setenv("HOME", tmp)
 
-	dir := config.ContextDir("my-ctx")
+	dir := config.GetContextDir("my-ctx")
 	assert.Contains(t, dir, ".ctx")
 	assert.Contains(t, dir, "contexts")
 	assert.Contains(t, dir, "my-ctx")

@@ -211,7 +211,7 @@ func TestRmCommand_SuccessRemovesContextDir(t *testing.T) {
 
 	cfg := setupConfig(t)
 
-	ctxDir := config.ContextDir("temp")
+	ctxDir := config.GetContextDir("temp")
 	require.NoError(t, os.MkdirAll(ctxDir, 0755))
 	dummy := filepath.Join(ctxDir, "notes.md")
 	require.NoError(t, os.WriteFile(dummy, []byte("test"), 0644))

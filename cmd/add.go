@@ -123,7 +123,7 @@ func resolveItemType(value, itemType string) (string, bool, error) {
 }
 
 func copyFileToContextDir(src, contextName string) (string, error) {
-	destDir := config.ContextDir(contextName)
+	destDir := config.GetContextDir(contextName)
 	if err := os.MkdirAll(destDir, 0755); err != nil {
 		return "", fmt.Errorf("could not create context dir: %w", err)
 	}

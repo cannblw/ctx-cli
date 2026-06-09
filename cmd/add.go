@@ -68,7 +68,8 @@ Examples:
 			}
 
 			if itemType == "file" {
-				value, err = copyFileToCtxDir(value, resolveContextName(cfg, isGlobal))
+				contextName := ResolveContextName(cfg, isGlobal)
+				value, err = copyFileToCtxDir(value, contextName)
 				if err != nil {
 					return err
 				}
@@ -200,11 +201,4 @@ func resolveSlug(s *store.Store, value string) (string, error) {
 		return base, nil
 	}
 	return fmt.Sprintf("%s-%d", base, count+1), nil
-}
-
-func resolveContextName(cfg *config.Config, isGlobal bool) string {
-	if isGlobal {
-		return ""
-	}
-	return cfg.CurrentContext
 }

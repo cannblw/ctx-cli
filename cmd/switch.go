@@ -27,11 +27,15 @@ and 'ctx ls' will operate on this context by default.`,
 }
 
 func switchContext(s *store.Store, cfg *config.Config, stdout io.Writer, name string) error {
-	ctx := context.Background()
-
-	if name == "" {
-		return fmt.Errorf("context name is required")
+	if name == "" || name == "global" {
+		if err := cfg.ClearCurrentContext(); err != nil {
+			return err
+		}
+		fmt.Fprintln(stdout, "Switched to global")
+		return nil
 	}
+
+	ctx := context.Background()
 
 	_, err := s.GetContext(ctx, name)
 	if err != nil {

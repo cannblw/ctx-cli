@@ -34,8 +34,8 @@ func TestRmCommand_SuccessForce(t *testing.T) {
 	require.NoError(t, rmCmd.Execute())
 
 	assert.Contains(t, buf.String(), `Deleted context "temp"`)
-	assert.Contains(t, buf.String(), `(current context is now "global")`)
-	assert.Equal(t, config.GlobalContextName, cfg.CurrentContext)
+	assert.Contains(t, buf.String(), "(current context is now global)")
+	assert.Equal(t, "", cfg.CurrentContext)
 
 	_, err := s.GetContext(context.Background(), "temp")
 	assert.Error(t, err)
@@ -173,6 +173,36 @@ func TestRmCommand_ErrorNotFound(t *testing.T) {
 	assert.Contains(t, err.Error(), `could not find context "nope"`)
 }
 
+func TestRmCommand_ErrorGlobalContext(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	cfg := setupConfig(t)
+
+	buf := &bytes.Buffer{}
+	stdin := strings.NewReader("")
+
+	rmCmd := cmd.NewRmCmd(s, cfg, stdin, buf)
+	rmCmd.SetArgs([]string{"--context", "global", "--force"})
+	err := rmCmd.Execute()
+
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), `could not find context "global"`)
+}
+
+func TestRmCommand_ErrorGlobalContextEmpty(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	cfg := setupConfig(t)
+
+	buf := &bytes.Buffer{}
+	stdin := strings.NewReader("")
+
+	rmCmd := cmd.NewRmCmd(s, cfg, stdin, buf)
+	rmCmd.SetArgs([]string{"--context", "", "--force"})
+	err := rmCmd.Execute()
+
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "cannot delete the global context")
+}
+
 // ── Context directory removal ────────────────────────────────────────────────
 
 func TestRmCommand_SuccessRemovesContextDir(t *testing.T) {
@@ -181,7 +211,7 @@ func TestRmCommand_SuccessRemovesContextDir(t *testing.T) {
 
 	cfg := setupConfig(t)
 
-	ctxDir := config.ContextDir("temp")
+	ctxDir := config.GetContextDir("temp")
 	require.NoError(t, os.MkdirAll(ctxDir, 0755))
 	dummy := filepath.Join(ctxDir, "notes.md")
 	require.NoError(t, os.WriteFile(dummy, []byte("test"), 0644))

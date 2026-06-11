@@ -99,3 +99,15 @@ func TestNewCommand_ErrorDuplicateName(t *testing.T) {
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "already exists")
 }
+
+func TestNewCommand_ErrorGlobalName(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	buf := &bytes.Buffer{}
+
+	newCmd := cmd.NewNewCmd(s, buf)
+	newCmd.SetArgs([]string{"global"})
+	err := newCmd.Execute()
+
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "global")
+}

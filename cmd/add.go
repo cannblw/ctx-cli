@@ -68,11 +68,8 @@ Examples:
 			}
 
 			if itemType == "file" {
-				ctxName := config.GlobalContextName
-				if !isGlobal {
-					ctxName = cfg.CurrentContext
-				}
-				value, err = copyFileToCtxDir(value, ctxName)
+				contextName := ResolveContextName(cfg, isGlobal)
+				value, err = copyFileToContextDir(value, contextName)
 				if err != nil {
 					return err
 				}
@@ -125,8 +122,8 @@ func resolveItemType(value, itemType string) (string, bool, error) {
 	return itemType, true, nil
 }
 
-func copyFileToCtxDir(src, ctxName string) (string, error) {
-	destDir := config.ContextDir(ctxName)
+func copyFileToContextDir(src, contextName string) (string, error) {
+	destDir := config.GetContextDir(contextName)
 	if err := os.MkdirAll(destDir, 0755); err != nil {
 		return "", fmt.Errorf("could not create context dir: %w", err)
 	}

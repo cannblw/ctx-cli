@@ -36,6 +36,9 @@ Examples:
   ctx rm --context fix-auth --force
   ctx rm --ctx fix-auth -f`,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if rmContextName == "" && cmd.Flags().Changed("context") {
+				return fmt.Errorf("cannot delete the global context")
+			}
 			if rmContextName != "" {
 				return deleteContext(s, cfg, rmContextName, rmForce, stdin, stdout)
 			}
@@ -54,6 +57,10 @@ Examples:
 }
 
 func deleteContext(s *store.Store, cfg *config.Config, name string, force bool, stdin io.Reader, stdout io.Writer) error {
+	if name == "" {
+		return fmt.Errorf("cannot delete the global context")
+	}
+
 	_, err := s.GetContext(context.Background(), name)
 	if err != nil {
 		return fmt.Errorf("could not find context %q", name)
@@ -75,13 +82,13 @@ func deleteContext(s *store.Store, cfg *config.Config, name string, force bool, 
 	}
 
 	// Non-fatal: directory may not exist if no files were ever added.
-	_ = os.RemoveAll(config.ContextDir(name))
+	_ = os.RemoveAll(config.GetContextDir(name))
 
 	if cfg.CurrentContext == name {
-		if err := cfg.SetCurrentContext(config.GlobalContextName); err != nil {
+		if err := cfg.ClearCurrentContext(); err != nil {
 			return fmt.Errorf("could not save config after deleting context: %w", err)
 		}
-		fmt.Fprintf(stdout, "(current context is now %q)\n", config.GlobalContextName)
+		fmt.Fprintln(stdout, "(current context is now global)")
 	}
 
 	fmt.Fprintf(stdout, "Deleted context %q\n", name)

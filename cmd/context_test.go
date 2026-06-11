@@ -22,6 +22,16 @@ func TestResolveContextID_SuccessReturnsNilForGlobal(t *testing.T) {
 	assert.Nil(t, id)
 }
 
+func TestResolveContextID_SuccessReturnsNilForEmptyCurrentContext(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	cfg := setupConfig(t)
+	cfg.CurrentContext = ""
+
+	id, err := cmd.ResolveContextID(s, cfg, false)
+	require.NoError(t, err)
+	assert.Nil(t, id)
+}
+
 func TestResolveContextID_SuccessReturnsID(t *testing.T) {
 	s := testutil.NewTestDB(t)
 	ctx := context.Background()

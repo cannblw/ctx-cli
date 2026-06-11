@@ -53,19 +53,6 @@ func TestSwitchCommand_SuccessSwitchToContext(t *testing.T) {
 	assert.Equal(t, "fix-auth", loaded.CurrentContext)
 }
 
-func TestSwitchCommand_ErrorEmptyName(t *testing.T) {
-	s := testutil.NewTestDB(t)
-	cfg := setupConfig(t)
-	buf := &bytes.Buffer{}
-
-	switchCmd := cmd.NewSwitchCmd(s, cfg, buf)
-	switchCmd.SetArgs([]string{""})
-	err := switchCmd.Execute()
-
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "context name is required")
-}
-
 func TestSwitchCommand_SuccessAliasS(t *testing.T) {
 	s := testutil.NewTestDB(t)
 	ctx := context.Background()
@@ -103,21 +90,38 @@ func TestSwitchCommand_SuccessReswitchSameContext(t *testing.T) {
 	assert.Contains(t, buf.String(), `Switched to context "fix-auth"`)
 }
 
-func TestSwitchCommand_SuccessSwitchToGlobal(t *testing.T) {
+func TestSwitchCommand_SuccessSwitchToGlobalAlias(t *testing.T) {
 	s := testutil.NewTestDB(t)
 	cfg := setupConfig(t)
+	require.NoError(t, cfg.SetCurrentContext("some-ctx"))
+
 	buf := &bytes.Buffer{}
 
 	switchCmd := cmd.NewSwitchCmd(s, cfg, buf)
-	switchCmd.SetArgs([]string{config.GlobalContextName})
+	switchCmd.SetArgs([]string{"global"})
 	require.NoError(t, switchCmd.Execute())
 
-	assert.Contains(t, buf.String(), `Switched to context "`+config.GlobalContextName+`"`)
-	assert.Equal(t, config.GlobalContextName, cfg.CurrentContext)
+	assert.Contains(t, buf.String(), "Switched to global")
+	assert.Equal(t, "", cfg.CurrentContext)
 
 	loaded, err := config.Load()
 	require.NoError(t, err)
-	assert.Equal(t, config.GlobalContextName, loaded.CurrentContext)
+	assert.Empty(t, loaded.CurrentContext)
+}
+
+func TestSwitchCommand_SuccessSwitchToGlobalEmpty(t *testing.T) {
+	s := testutil.NewTestDB(t)
+	cfg := setupConfig(t)
+	require.NoError(t, cfg.SetCurrentContext("some-ctx"))
+
+	buf := &bytes.Buffer{}
+
+	switchCmd := cmd.NewSwitchCmd(s, cfg, buf)
+	switchCmd.SetArgs([]string{""})
+	require.NoError(t, switchCmd.Execute())
+
+	assert.Contains(t, buf.String(), "Switched to global")
+	assert.Equal(t, "", cfg.CurrentContext)
 }
 
 // ── Switch command errors ────────────────────────────────────────────────────

@@ -15,8 +15,7 @@ type Config struct {
 }
 
 const (
-	GlobalContextName = "global"
-	DefaultItemState  = "todo"
+	DefaultItemState = "todo"
 )
 
 func Dir() string {
@@ -38,7 +37,7 @@ func Load() (*Config, error) {
 	v.SetConfigType("yaml")
 
 	if _, err := os.Stat(Path()); os.IsNotExist(err) {
-		v.Set("current_context", GlobalContextName)
+		v.Set("current_context", "")
 		v.Set("default_state", DefaultItemState)
 		if err := v.WriteConfigAs(Path()); err != nil {
 			return nil, fmt.Errorf("could not write config: %w", err)
@@ -71,7 +70,13 @@ func (c *Config) SetCurrentContext(name string) error {
 	return c.Save()
 }
 
-// ContextDir returns the filesystem directory for a context's stored files.
-func ContextDir(name string) string {
+// ClearCurrentContext clears the current context (sets it to global) and persists the config.
+func (c *Config) ClearCurrentContext() error {
+	c.CurrentContext = ""
+	return c.Save()
+}
+
+// GetContextDir returns the filesystem directory for a context's stored files.
+func GetContextDir(name string) string {
 	return filepath.Join(Dir(), "contexts", name)
 }

@@ -36,6 +36,10 @@ Use `New<Type>()` for constructors: `NewStore()`, `NewStoreFromDB()`. Not bare `
 
 For sets (key-existence checks only), use `map[K]struct{}` with the comma-ok idiom, never `map[K]bool`.
 
+Prefer raw string literals (backticks) over escaped quotes: `` fmt.Errorf(`name "foo"`) ``, not `fmt.Errorf("name \"foo\"")`.
+
+Prefer the long form `context` over `ctx` in identifiers, unless it's the Go `context` package, a CLI argument name (`ctx <args>`), or the project name (`ctx-cli`). Use `copyFileToContextDir`, not `copyFileToCtxDir`.
+
 ## Nomenclature
 
 **Always** use "current context", never "active context". The config field is `current_context`, the Go field is `CurrentContext`. User-facing messages, comments, and docs must say "current", not "active".

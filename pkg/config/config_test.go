@@ -132,7 +132,7 @@ func TestClearCurrentContext_Success(t *testing.T) {
 	assert.Empty(t, loaded.CurrentContext)
 }
 
-// ── GetContextDir ─────────────────────────────────────────────────────────
+// ── GetContextDir ────────────────────────────────────────────────────────────
 
 func TestGetContextDir_Success(t *testing.T) {
 	tmp := t.TempDir()
